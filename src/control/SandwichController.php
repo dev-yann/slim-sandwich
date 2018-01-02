@@ -7,98 +7,103 @@
  */
 
 namespace lbs\control;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use lbs\model\Categorie;
+use lbs\control\Writer;
+use lbs\model\Size;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use lbs\model\Sandwich;
+use lbs\control\Pagination;
 
-class SandwichController
+class SandwichController extends Pagination
 {
     // Récupération du conteneur de dépendance
 
     private $container;
+    private $result;
 
     public function __construct(\Slim\Container $container){
 
         $this->container = $container;
+        $this->result = array();
 
     }
 
 
-    public function getSandwich(Request $req, Response $resp,$args){
-
-        // Verification des parametre
-        $paramT = $req->getQueryParam('t',null);
-        $img = (is_null($req->getQueryParam('img',null))) ? 0 : 1;
-        $page = $req->getQueryParam('page',1);// si il est absent alors 1
-
-        if($page<0){
-            $page=1;
-        }
-
-
-        $size = $req->getQueryParam('size',10);// si il est absent alors 20
-
+    // RÉCUPÉRER UN SANDWICH
+    public function getOneSandwich(Request $req, Response $resp,$args){
 
         try{
 
-            // MES COLLONES
-            $query = Sandwich::select('id','nom','type_pain');
+            if($sandwich = Sandwich::where('id',"=",$args['id'])->firstOrFail())
+            {
+                $categories = $sandwich->categories()->select('id','nom')->get();
+                $tailles = $sandwich->sizes()->select('id','nom','prix')->get();
+
+                $link = array('links' => ['categories' => ['href' => $this->container['router']->pathFor('categorieOfSandwich', ['id'=>$sandwich->id])],'tailles' => ['href' => $this->container['router']->pathFor('sizeOfSandwich', ['id'=>$sandwich->id])]]);
 
 
-            if(!is_null($paramT)){
+                $data = Writer::ressource($sandwich,$link,'sandwich');
+                array_push($data, ["Categories" => [$categories]]);
+                array_push($data, ["Tailles" => [$tailles]]);
+                return Writer::json_output($resp,200,$data);
 
-                $query = $query->where('type_pain','like','%'.$paramT.'%');
+            } else {
+
+                throw new ModelNotFoundException($req, $resp);
             }
-
-            if($img === 1){
-                $query = $query->whereNotNull('img');
-            }
-
-            // NB D'ELEMENT TOTAL RÉPONDANT A LA REQ INDÉPENDANT DE LA PAGINATION
-            $total = $query->count();
-
-            $nbpageMax = round(($total/$size)+1);
-
-            if($page > $nbpageMax){
-
-                $page = $nbpageMax;
-            }
-
-            // ELEMENT DE PAGINATION
-            $query = $query->skip(($page - 1) * $size)->take($size)->get();
-            // DATE ET COUNT DE LA PAGE COURANTE
-            $date = date("d-m-y");
-            $countSize = $query->count();
-            $tab = $query;
-
-            // TABLEAU DE RECEPTION
-            $tableau = array();
-
-            foreach ($tab as $sandwich){
-
-                $link = array('links' => ['self' => ['href' => $this->container['router']->pathFor('marcel', ['id'=>$sandwich->id])]]);
-                array_push($link,$sandwich);
-
-                array_push($tableau,$link);
-            }
-
-
-            $head = ["type" => "collection","meta" => ["count" => $total,"size" => $countSize,"date" => $date]];
-
-            array_push($head,$tableau);
-
-            $resp = $resp->withHeader('Content-Type','application/json')->withStatus(200);
-            $resp->getBody()->write(json_encode($head));
-            return $resp;
-
 
         } catch (ModelNotFoundException $exception){
 
-
-            echo('La ressource n\'existe pas');
+            $notFoundHandler = $this->container->get('notFoundHandler');
+            return $notFoundHandler($req,$resp);
 
         }
 
     }
 
+    // RÉCUPÉRER PLUSIEURS SANDWICHS
+    public function getSandwich(Request $req, Response $resp,$args){
+
+        $query = Sandwich::select('id','nom','description','img');
+        $sandwichs = Pagination::queryNsize($req,$query);
+
+        foreach ($sandwichs as $sandwich){
+
+            $link = array('links' => ['self' => ['href' => $this->container['router']->pathFor('categorie', ['id'=>$sandwich->id])]]);
+            array_push($link,$sandwich);
+
+            array_push($this->result,$link);
+        }
+
+        $data = Writer::collection($this->result);
+        return Writer::json_output($resp,200,$data);
+    }
+
+    public function getSandwichOfCategorie(Request $req, Response $resp,$args){
+
+        try{
+            $categorie = Categorie::where('id','=',$args['id'])->firstOrFail();
+            $query = $categorie->sandwichs();
+            $sandwichs = Pagination::queryNsize($req,$query);
+
+            foreach ($sandwichs as $sandwich){
+
+                $link = array('links' => ['self' => ['href' => $this->container['router']->pathFor('sandwich', ['id'=>$sandwich->id])]]);
+                array_push($link,$sandwich);
+
+                array_push($this->result,$link);
+            }
+
+            $data = Writer::collection($this->result);
+            return Writer::json_output($resp,200,$data);
+
+        } catch (ModelNotFoundException $exception){
+
+            $notFoundHandler = $this->container->get('notFoundHandler');
+            return $notFoundHandler($req,$resp);
+
+        }
+    }
 }

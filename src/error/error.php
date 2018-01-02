@@ -8,7 +8,7 @@
 
 return [
     'notFoundHandler' => function($c) {
-        return function ($request, $response) use ($c) {
+        return function (\Slim\Http\Request $request, \Slim\Http\Response $response) use ($c) {
             $tab = ['type' => "error" ,"error" => 404, "Message :" => "not found: Ressource non trouvée."];
 
             $response = $response->withHeader('Content-Type','application/json');
