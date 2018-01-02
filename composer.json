@@ -1,6 +1,0 @@
-{
-    "require": {
-        "slim/slim": "^3.0",
-        "ramsey/uuid": "^3.7"
-    }
-}

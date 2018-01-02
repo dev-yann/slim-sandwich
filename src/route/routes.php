@@ -26,7 +26,6 @@ $app->post('/categories[/]', \lbs\control\Categoriescontroller::class . ':addCat
 $app->put('/categories[/]', \lbs\control\Categoriescontroller::class . ':changeCategorie')->setName('categorie');
 
 
-
 // ROUTES SANDWICHS
 $app->get('/sandwichs[/]',\lbs\control\SandwichController::class . ':getSandwich')->setName('sandwichs');
 $app->get('/sandwichs/{id}',\lbs\control\SandwichController::class . ':getOneSandwich')->setName('sandwich');
@@ -37,3 +36,8 @@ $app->get('/sandwichs/{id}/categories', \lbs\control\Categoriescontroller::class
 //ROUTES TAILLES
 $app->get('/sandwichs/{id}/sizes', \lbs\control\sizeController::class . ':sizeOfSandwich')->setName('sizeOfSandwich');
 $app->get('/sizes/{id}', \lbs\control\sizeController::class . ':sizeOfSandwich')->setName('size');
+
+//ROUTES COMMANDES
+$app->get('/commande/{id}',\lbs\control\CommandeController::class .':getCommande')->setName("commande");
+$app->post('/commande[/]',\lbs\control\CommandeController::class .':createCommande')->setName("createCommande");
+$app->put('/commande/{token}',\lbs\control\CommandeController::class .':changeCommande')->setName("changeCommande");
