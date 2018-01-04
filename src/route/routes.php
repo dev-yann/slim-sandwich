@@ -39,5 +39,10 @@ $app->get('/sizes/{id}', \lbs\control\sizeController::class . ':sizeOfSandwich')
 
 //ROUTES COMMANDES
 $app->get('/commande/{id}',\lbs\control\CommandeController::class .':getCommande')->setName("commande");
+$app->get('/commandes[/]',\lbs\control\CommandeController::class .':getCommandes')->setName("commandes");
 $app->post('/commande[/]',\lbs\control\CommandeController::class .':createCommande')->setName("createCommande");
-$app->put('/commande/{token}',\lbs\control\CommandeController::class .':changeCommande')->setName("changeCommande");
+$app->put('/commande/{token}',\lbs\control\CommandeController::class .':modifyCommande')->setName("modifyCommande");
+
+//ROUTES ITEMS 
+$app->post('/item[/]',\lbs\control\ItemController::class.':addItemToCommande')->setName("addItem");
+$app->put('/item/{id}',\lbs\control\ItemController::class.':editItem')->setName("editItem");

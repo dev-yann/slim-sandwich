@@ -14,6 +14,8 @@ use Ramsey\Uuid\Uuid;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use lbs\control\Pagination;
+
 
 class CommandeController
 {
@@ -80,6 +82,14 @@ class CommandeController
 
 
     }
+    public function getCommandes (Request $req, Response $resp, $args) {
+        $query = Commande::all();
+        $commandes = Pagination::queryNsize($req,$query);
+        $commandes = Writer::collection($commandes);
+        return Writer::json_output($resp,200,$commandes);
+
+
+    }
 
     public function getCommande (Request $req, Response $resp,$args) {
 
@@ -122,7 +132,7 @@ class CommandeController
         }
     }
 
-    public function changeCommande(Request $req,Response $resp,$args) {
+    public function modifyCommande(Request $req,Response $resp,$args) {
         $commande = Commande::where("token","=",$args["token"])->first();
         $tab = $req->getParsedBody();
         $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
