@@ -53,21 +53,21 @@ services:
 # A second php service
 ##############################################
 
-#  api:
-#      image: canals/php
-#      container_name: api
-##      environment:
-#       - VHOST_HOSTNAME=api.local
-#       - VHOST_DOCROOT=/var/www/api
-#     ports:
-#       - "6080:80"
-#       - "6443:443"
-#     volumes :
-#       - ./api:/var/www/api
-#       - ./src:/var/www/src
-#       - ./html:/var/www/html
-#     links :
-#        - mysql:db
+  api:
+     image: canals/php
+     container_name: api
+     environment:
+       - VHOST_HOSTNAME=api.local
+       - VHOST_DOCROOT=/var/www/api_private
+     ports:
+       - "6080:80"
+       - "6443:443"
+     volumes :
+       - ./api_private:/var/www/api_private
+       - ./src_private:/var/www/src_private
+       - ./html_private:/var/www/html_private
+     links :
+        - mysql:db
 
 ##################################
 # postgres + adminer

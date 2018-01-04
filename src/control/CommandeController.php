@@ -43,7 +43,7 @@ class CommandeController
         $commande->prenom_client = filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
         $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
         // A voir avec le prof, c'est un peu flou
-        $commande->livraison = \DateTime::createFromFormat('d-m-Y',$tab['livraison']['date'].' '.$tab['livraison']['heure']);
+        $commande->livraison = \DateTime::createFromFormat('d-m-Y',$tab['date'].' '.$tab['heure']);
 
         // Création du token
         $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
