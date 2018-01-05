@@ -149,7 +149,7 @@ class CommandeController
         }
     }
 
-    public function modifyCommande(Request $req,Response $resp,$args) {
+    public function editCommande(Request $req,Response $resp,$args) {
         $commande = Commande::where("id","=",$args["id"])->first();
         $tab = $req->getParsedBody();
         $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);

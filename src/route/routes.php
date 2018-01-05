@@ -42,8 +42,9 @@ $app->get('/commande/{id}',\lbs\control\CommandeController::class .':getCommande
 $app->get('/commande/{id}/state',\lbs\control\CommandeController::class .':getState')->setName("stateCommande");
 $app->get('/commandes[/]',\lbs\control\CommandeController::class .':getCommandes')->setName("commandes");
 $app->post('/commande[/]',\lbs\control\CommandeController::class .':createCommande')->setName("createCommande");
-$app->put('/commande/{id}',\lbs\control\CommandeController::class .':modifyCommande')->setName("modifyCommande");
+$app->put('/commande/{id}',\lbs\control\CommandeController::class .':editCommande')->setName("editCommande");
 
 //ROUTES ITEMS 
 $app->post('/item[/]',\lbs\control\ItemController::class.':addItemToCommande')->setName("addItem");
 $app->put('/item/{id}',\lbs\control\ItemController::class.':editItem')->setName("editItem");
+$app->delete('/item/{id}',\lbs\control\ItemController::class.':deleteItem')->setName("deleteItem");

@@ -57,4 +57,15 @@ class ItemController {
 		}
 
 	}
+	public function deleteItem (Request $req, Response $resp,$args) {
+		$item = Item::where("id","=",$args['id'])->first();
+			try {
+			$item->delete();
+		return Writer::json_output($resp,200,"Suppression réussie");
+
+		} catch (Exception $e) {
+			$resp = $resp->withHeader('Content-Type','application/json');
+			$resp->getBody()->write(json_encode(['type' => 'error', 'error' => 500, 'message' => $e->getMessage()]));
+		}
+	}
 }
