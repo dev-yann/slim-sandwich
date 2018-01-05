@@ -23,4 +23,8 @@ class Commande extends Model
         return $this->hasMany(Item::class);
     }
 
+    public function sandwichs(){
+        return $this->belongsToMany(Sandwich::class, 'sand2com', 'com_id', 'sand_id');
+    }
+
 }

@@ -65,23 +65,30 @@ class CommandeController
 
        */
 
-       if(isset($tab['nom']) && isset($tab['mail']) && isset($tab['livraison']['date']) && isset($tab['livraison']['heure']))
-        try{
+       if(isset($tab['nom_client']) && isset($tab['mail_client']) && isset($tab['date']) && isset($tab['heure'])){
 
-            $commande->save();
-            $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['token' => $commande->token]));
-            $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(201);
-            $resp->getBody()->write(json_encode($commande->toArray()));
-            return $resp;
+           try{
 
-        } catch (\Exception $e){
-            // revoyer erreur format jsno
-            $resp = $resp->withHeader('Content-Type','application/json');
-            $resp->getBody()->write(json_encode(['type' => 'error', 'error' => 500, 'message' => $e->getMessage()]));
-        }
+               $commande->save();
+               $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['token' => $commande->token]));
+               $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(201);
+               $resp->getBody()->write(json_encode($commande->toArray()));
+               return $resp;
 
+           } catch (\Exception $e){
+               // revoyer erreur format jsno
+               $resp = $resp->withHeader('Content-Type','application/json');
+               $resp->getBody()->write(json_encode(['type' => 'error', 'error' => 500, 'message' => $e->getMessage()]));
+           }
+
+       } else {
+
+           Writer::json_output($resp,400, "Données manquantes");
+       }
 
     }
+
+
     public function getCommandes (Request $req, Response $resp, $args) {
         $query = Commande::all();
         
