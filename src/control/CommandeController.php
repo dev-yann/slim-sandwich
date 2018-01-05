@@ -84,13 +84,30 @@ class CommandeController
     }
     public function getCommandes (Request $req, Response $resp, $args) {
         $query = Commande::all();
-        $commandes = Pagination::queryNsize($req,$query);
-        $commandes = Writer::collection($commandes);
-        return Writer::json_output($resp,200,$commandes);
+        
+        return Writer::json_output($resp,200,$query);
 
 
     }
+     public function getState (Request $req, Response $resp,$args) {
+           try{
 
+            if($commande = Commande::select("etat")->where('id',"=",$args['id'])->firstOrFail())
+            {
+
+
+                return Writer::json_output($resp,200,$commande);
+
+            } else {
+                throw new ModelNotFoundException($req, $resp);
+            }
+
+        } catch (ModelNotFoundException $exception){
+
+            $notFoundHandler = $this->container->get('notFoundHandler');
+            return $notFoundHandler($req,$resp);
+        }
+     }
     public function getCommande (Request $req, Response $resp,$args) {
 
         $token = $req->getQueryParam("token",1);
@@ -133,7 +150,7 @@ class CommandeController
     }
 
     public function modifyCommande(Request $req,Response $resp,$args) {
-        $commande = Commande::where("token","=",$args["token"])->first();
+        $commande = Commande::where("id","=",$args["id"])->first();
         $tab = $req->getParsedBody();
         $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
         $commande->prenom_client= filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);

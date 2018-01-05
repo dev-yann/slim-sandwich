@@ -34,7 +34,9 @@ class ItemController {
 		}
 
 	}
-		public function editItem (Request $req, Response $resp,$args) {
+	
+
+	public function editItem (Request $req, Response $resp,$args) {
 		$item = Item::where("id","=",$args['id'])->first();
 		$tab = $req->getParsedBody();
 		$item->sand_id = filter_var($tab["sand_id"],FILTER_SANITIZE_STRING);
