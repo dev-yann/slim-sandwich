@@ -32,8 +32,17 @@ class cardController
 
         $card->mail = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
         // revoir la date
-        $card->date_creation = \DateTime::createFromFormat('d-m-Y',$tab['date'].' '.$tab['heure']);
+        $card->date_creation = \DateTime::createFromFormat('d-m-Y',$tab['livraison']);
         $card->cumul = 0;
+
+
+        // verifier si tout les post existe
+        if(isset($tab["nom_client"]) && isset($tab["pass_client"]) && isset($tab["mail_client"]) && isset($tab['livraison'])){
+
+            // regarder si le client existe
+
+            $client = 
+        }
 
     }
 }
