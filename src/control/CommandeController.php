@@ -51,6 +51,11 @@ class CommandeController
         $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
         $commande->etat = "non traité";
 
+        // indiquer le numero de carte -> prouver que c'est le propriétaire de la carte
+        // table carte :
+        // id , nom, mdp -> /carte/id/auth ( nom + mdp) -> reponse : token jwt( token avec de l'info : ex: num de la carte)  avec ce token je peu :
+        // lire la carte -> get /carte/id + token
+        // à partir de la je peux créer une commande avec le token jwt de la carte , la commande est donc associé à la carte ( associate je pense )
 
         // VERIFICATION DES DONNÉES RECU
        /*

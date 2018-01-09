@@ -48,3 +48,7 @@ $app->put('/commande/{id}',\lbs\control\CommandeController::class .':editCommand
 $app->post('/item[/]',\lbs\control\ItemController::class.':addItemToCommande')->setName("addItem");
 $app->put('/item/{id}',\lbs\control\ItemController::class.':editItem')->setName("editItem");
 $app->delete('/item/{id}',\lbs\control\ItemController::class.':deleteItem')->setName("deleteItem");
+
+
+// ROUTES CARD
+$app->post('/card[/]',\lbs\control\cardController::class.':createCard');
