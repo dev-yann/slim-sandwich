@@ -21,4 +21,9 @@ class Size extends Model
     public function sandwichs(){
         return $this->belongsToMany(Sandwich::class, 'tarif', 'taille_id', 'sand_id')->withPivot(['prix']);
     }
+
+    // une taille peut appartenir à plusieurs items
+    public function items(){
+        return $this->hasMany(Item::class,"taille_id");
+    }
 }

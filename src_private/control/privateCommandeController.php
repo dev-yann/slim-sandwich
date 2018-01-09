@@ -11,6 +11,7 @@ namespace lbs\control;
 
 use lbs\model\Commande;
 use lbs\control\Pagination;
+use lbs\model\Item;
 use Ramsey\Uuid\Uuid;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
@@ -64,26 +65,29 @@ class privateCommandeController extends Pagination
      les noms des sandwichs et leur taille sous la forme de ressources imbriqués
 
 
-    // a travailler, la base doit etre nikel pour que ce soit possible 
+    // a travailler, la base doit etre nikel pour que ce soit possible
     */
     public function getCommande(Request $req, Response $resp,$args){
-        $query = Commande::select("id", "nom_client", "prenom_client", "mail_client", "livraison","token" ,"etat")
-                ->where('id','=',$args['id'])
-                ->with("item","sandwich","tailles")->get();
 
         try{
 
             if($commande = Commande::where('id',"=",$args['id'])->firstOrFail())
             {
-                $items = $commande->items()->get();
-                $tailles = $sandwich->sizes()->select('id','nom','prix')->get();
 
-                $link = array('links' => ['categories' => ['href' => $this->container['router']->pathFor('categorieOfSandwich', ['id'=>$sandwich->id])],'tailles' => ['href' => $this->container['router']->pathFor('sizeOfSandwich', ['id'=>$sandwich->id])]]);
+                // si j'obtient la commande
+                array_push($this->result,$commande);
+
+                // je veux la liste des items de la commande
+                $items = Item::where("commande_id","=",$args['id'])->with('sandwich','size')->get();
+
+                foreach ($items as $item){
+
+                    $tabItem = array('items' => $item);
+                    array_push($this->result,$tabItem);
+                }
 
 
-                $data = Writer::ressource($sandwich,$link,'sandwich');
-                array_push($data, ["Categories" => [$categories]]);
-                array_push($data, ["Tailles" => [$tailles]]);
+                $data = Writer::collection($this->result);
                 return Writer::json_output($resp,200,$data);
 
             } else {
@@ -97,7 +101,43 @@ class privateCommandeController extends Pagination
             return $notFoundHandler($req,$resp);
 
         }
-
-
     }
+
+
+    // CHANGE "NON TRAITE" EN "TRAITÉ"
+    public function changeStateCommande(Request $req, Response $resp,$args){
+
+        // Récuperation de données envoyées
+        $tab = $req->getParsedBody();
+
+        // CLEAN DATA
+        $state = filter_var($tab['state'],FILTER_SANITIZE_STRING);
+        $id = filter_var($args['id'],FILTER_SANITIZE_STRING);
+
+        try{
+
+            // Récuperation de l'id dans la base
+            $commande = Commande::where('id','=',$id)->firstOrFail();
+
+            if($state === "traite" || $state === "non traite"){
+                $commande->etat = $state;
+                $commande->save();
+            } else {
+
+                return Writer::json_output($resp, 400,"mauvaise syntaxe d'état");
+            }
+
+
+
+            $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['id' => $commande->id]));
+            return Writer::json_output($resp,200,$commande->toArray());
+
+        } catch (ModelNotFoundException $e){
+
+            $notFoundHandler = $this->container->get('notFoundHandler');
+            return $notFoundHandler($req,$resp);
+        }
+    }
+
+
 }

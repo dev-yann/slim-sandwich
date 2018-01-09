@@ -53,6 +53,11 @@ class CommandeController
         $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
         $commande->etat = "non traité";
 
+        // indiquer le numero de carte -> prouver que c'est le propriétaire de la carte
+        // table carte :
+        // id , nom, mdp -> /carte/id/auth ( nom + mdp) -> reponse : token jwt( token avec de l'info : ex: num de la carte)  avec ce token je peu :
+        // lire la carte -> get /carte/id + token
+        // à partir de la je peux créer une commande avec le token jwt de la carte , la commande est donc associé à la carte ( associate je pense )
 
         // VERIFICATION DES DONNÉES RECU
        /*
@@ -66,6 +71,7 @@ class CommandeController
        format de la date, et validité de la date (date future uniquement)
 
        */
+
 
        // if(isset($tab['nom_client']) &&(isset($tab['prenom_client'])) && (isset($tab['mail_client'])) && (isset($tab['date'])))
        //  {
@@ -83,15 +89,17 @@ class CommandeController
               $resp->getBody()->write(json_encode(['type' => 'error', 'error' => 500, 'message' => $e->getMessage()]));
         }
 
+       } else {
 
-    // }
+           Writer::json_output($resp,400, "Données manquantes");
+       }
 }
-public function getCommandes (Request $req, Response $resp, $args) {
-    $query = Commande::all();
-
-    return Writer::json_output($resp,200,$query);
 
 
+    public function getCommandes (Request $req, Response $resp, $args) {
+        $query = Commande::all();
+        
+        return Writer::json_output($resp,200,$query);
 }
 public function getState (Request $req, Response $resp,$args) {
  try{

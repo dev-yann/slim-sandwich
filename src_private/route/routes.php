@@ -19,3 +19,4 @@ $app->get('/',function($req,$rep,$args){
 //ROUTES COMMANDES
 $app->get('/commandes[/]',\lbs\control\privateCommandeController::class .':getCommandes')->setName("commandes");
 $app->get('/commandes/{id}',\lbs\control\privateCommandeController::class .':getCommande')->setName("commande");
+$app->put('/commandes/{id}',\lbs\control\privateCommandeController::class .':changeStateCommande');
