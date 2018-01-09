@@ -14,10 +14,10 @@ use Illuminate\Database\Eloquent\Model;
 class Card extends Model
 {
 
-    protected $table      = 'card';
+    protected $table      = 'carte';
     protected $primaryKey = 'id';
-    public    $timestamps = true;
-    const created_at = 'date_creation';
-    protected $hidden = ['pivot'];
+    public $keyType ='string';
+    public $incrementing = false;
+
 
 }

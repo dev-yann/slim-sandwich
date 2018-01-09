@@ -27,30 +27,31 @@ class cardController
     public function createCard(Request $req, Response $resp,$args){
 
         $tab = $req->getParsedBody();
-        // verifier si tout les post existe
+        // SI TOUS LES POSTS SONT ENVOYÉS
         if(isset($tab["nom_client"]) && isset($tab["pass_client"]) && isset($tab["mail_client"])){
 
             $card = new Card();
-
             $card->id = Uuid::uuid1();
             $card->nom = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
             $card->password = filter_var($tab["pass_client"],FILTER_SANITIZE_STRING);
             $card->mail = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
             $card->cumul = 0;
 
-            // regarder si le client existe
+            // SI LA CARTE EXIST
             try{
-                $client = Client::select('id')->where('mail','=',$card->mail)->where('password','=',$card->password)->firstOrFail();
+                $client = Card::select('id')->where('password',"=",$card->password)->where("mail",'=',$card->mail)->first();
 
-                if(!empty($client) && isset($client)){
+                if(empty($client) && !isset($client)){
 
+                    // ET SI IL N'A PAS DE CARTE
                     $card->save();
-                    /*$resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(201);
+
+                    $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(201);
                     $resp->getBody()->write(json_encode($card->toArray()));
-                    return $resp;*/
-
+                    return $resp;
+                } else {
+                    return Writer::json_output($resp,200,"Cette carte existe déjà");
                 }
-
             } catch(ModelNotFoundException $e){
 
                 $notFoundHandler = $this->container->get('notFoundHandler');
