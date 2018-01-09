@@ -10,21 +10,24 @@ namespace lbs\control;
 
 
 use lbs\model\Commande;
+use lbs\control\Pagination;
+use lbs\model\Item;
 use Ramsey\Uuid\Uuid;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use lbs\control\Pagination;
+
 
 
 class CommandeController
 {
     // Récupération du conteneur de dépendance
-    private $container;
+  private $container;
 
-    public function __construct(\Slim\Container $container){
-        $this->container = $container;
-    }
+  public function __construct(\Slim\Container $container){
+    $this->container = $container;
+    $this->result = array();
+  }
 
     /*
      * Création d'une commande via une requête POST
@@ -34,24 +37,24 @@ class CommandeController
     public function createCommande(Request $req, Response $resp) {
 
         // Récupération des données envoyées
-        $tab = $req->getParsedBody();
+      $tab = $req->getParsedBody();
 
-        $commande = new Commande();
+      $commande = new Commande();
 
         // id globalement unique - unicité très probable
-        $commande->id = Uuid::uuid1();
+      $commande->id = Uuid::uuid1();
 
-        $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
-        $commande->prenom_client = filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
-        $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
+      $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
+      $commande->prenom_client = filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
+      $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
         // A voir avec le prof, c'est un peu flou
-        $livraison = new \DateTime($tab['date']);
-        $livraison ->format('Y-m-d H:i:s');
-        $commande->livraison = $livraison;
+      $livraison = new \DateTime($tab['date']);
+      $livraison ->format('Y-m-d H:i:s');
+      $commande->livraison = $livraison;
 
         // Création du token
-        $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
-        $commande->etat = "non traité";
+      $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
+      $commande->etat = "non traité";
 
         // indiquer le numero de carte -> prouver que c'est le propriétaire de la carte
         // table carte :
@@ -75,113 +78,146 @@ class CommandeController
 
        // if(isset($tab['nom_client']) &&(isset($tab['prenom_client'])) && (isset($tab['mail_client'])) && (isset($tab['date'])))
        //  {
-        try{
+       try{
 
-            $commande->save();
-            $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['id' => $commande->id]));
-            $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(201);
-            $resp->getBody()->write(json_encode($commande->toArray()));
-            return $resp;
+        $commande->save();
+        $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['id' => $commande->id]));
+        $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(201);
+        $resp->getBody()->write(json_encode($commande->toArray()));
+        return $resp;
 
-        } catch (\Exception $e){
+      } catch (\Exception $e){
             // revoyer erreur format jsno
-            $resp = $resp->withHeader('Content-Type','application/json')->withStatus(500);
-              $resp->getBody()->write(json_encode(['type' => 'error', 'error' => 500, 'message' => $e->getMessage()]));
-        }
+        $resp = $resp->withHeader('Content-Type','application/json')->withStatus(500);
+        $resp->getBody()->write(json_encode(['type' => 'error', 'error' => 500, 'message' => $e->getMessage()]));
 
-       } else {
+    }
+   //   else {
 
-           Writer::json_output($resp,400, "Données manquantes");
-       }
-}
+   //   Writer::json_output($resp,400, "Données manquantes");
+   // }
+ }
 
 
-    public function getCommandes (Request $req, Response $resp, $args) {
-        $query = Commande::all();
-        
-        return Writer::json_output($resp,200,$query);
+ public function getCommandes (Request $req, Response $resp, $args) {
+  $query = Commande::all();
+
+  return Writer::json_output($resp,200,$query);
 }
 public function getState (Request $req, Response $resp,$args) {
  try{
 
-    if($commande = Commande::select("etat")->where('id',"=",$args['id'])->firstOrFail())
-        {
+  if($commande = Commande::select("etat")->where('id',"=",$args['id'])->firstOrFail())
+    {
 
 
-            return Writer::json_output($resp,200,$commande);
+      return Writer::json_output($resp,200,$commande);
 
-        } else {
-            throw new ModelNotFoundException($req, $resp);
-        }
-
-    } catch (ModelNotFoundException $exception){
-
-        $notFoundHandler = $this->container->get('notFoundHandler');
-        return $notFoundHandler($req,$resp);
+    } else {
+      throw new ModelNotFoundException($req, $resp);
     }
+
+  } catch (ModelNotFoundException $exception){
+
+    $notFoundHandler = $this->container->get('notFoundHandler');
+    return $notFoundHandler($req,$resp);
+  }
 }
 public function getCommande (Request $req, Response $resp,$args) {
 
-    $token = $req->getQueryParam("token",1);
-    $otherToken = $req->getHeader('x-lbs-token');
+  $token = $req->getQueryParam("token",1);
+  $otherToken = $req->getHeader('x-lbs-token');
 
         // SOIT DANS L'URL SOIT DANS L'ENTETE HTTP
-    if($token != 1){
-
-        try{
-
-            $requeteBase = Commande::where("id","=", $args['id'])->where("token","=",$token)->firstOrFail();
-            $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(200);
-            $resp->getBody()->write(json_encode($requeteBase));
-            return $resp;
-
-        } catch (ModelNotFoundException $exception){
-
-            $notFoundHandler = $this->container->get('notFoundHandler');
-            return $notFoundHandler($req,$resp);
-
-        }
-
-    } elseif (isset($otherToken) && !empty($otherToken)){
-
-        try{
-
-            $request = Commande::where("id","=", $args['id'])->where("token","=",$otherToken)->firstOrFail();
-            return Writer::json_output($resp,200,$request);
-
-        } catch (ModelNotFoundException $exception){
-
-            $notFoundHandler = $this->container->get('notFoundHandler');
-            return $notFoundHandler($req,$resp);
-        }
-
-    } else {
-
-        return Writer::json_output($resp,401,"Token manquant");
-    }
-}
-
-public function editCommande(Request $req,Response $resp,$args) {
-    $commande = Commande::where("id","=",$args["id"])->first();
-    $tab = $req->getParsedBody();
-    $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
-    $commande->prenom_client= filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
-    $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
-    $commande->livraison = $tab["livraison"];
+  if($token != 1){
 
     try{
 
-        $commande->save();
+      $requeteBase = Commande::where("id","=", $args['id'])->where("token","=",$token)->firstOrFail();
+      $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(200);
+      $resp->getBody()->write(json_encode($requeteBase));
+      return $resp;
 
-    }catch (\Exception $e){
-            // revoyer erreur format jsno
-        $resp = $resp->withHeader('Content-Type','application/json');
-        $resp->getBody()->write(json_encode(['type' => 'error', 'error' => 500, 'message' => $e->getMessage()]));
+    } catch (ModelNotFoundException $exception){
+
+      $notFoundHandler = $this->container->get('notFoundHandler');
+      return $notFoundHandler($req,$resp);
 
     }
-    $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['token' => $commande->token]));
-    $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(200);
-    $resp->getBody()->write(json_encode($commande->toArray()));
-    return $resp;
+
+  } elseif (isset($otherToken) && !empty($otherToken)){
+
+    try{
+
+      $request = Commande::where("id","=", $args['id'])->where("token","=",$otherToken)->firstOrFail();
+      return Writer::json_output($resp,200,$request);
+
+    } catch (ModelNotFoundException $exception){
+
+      $notFoundHandler = $this->container->get('notFoundHandler');
+      return $notFoundHandler($req,$resp);
+    }
+
+  } else {
+
+    return Writer::json_output($resp,401,"Token manquant");
+  }
+}
+
+public function editCommande(Request $req,Response $resp,$args) {
+  $commande = Commande::where("id","=",$args["id"])->first();
+  $tab = $req->getParsedBody();
+  $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
+  $commande->prenom_client= filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
+  $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
+  $commande->livraison = $tab["livraison"];
+
+  try{
+
+    $commande->save();
+
+  }catch (\Exception $e){
+            // revoyer erreur format jsno
+    $resp = $resp->withHeader('Content-Type','application/json');
+    $resp->getBody()->write(json_encode(['type' => 'error', 'error' => 500, 'message' => $e->getMessage()]));
+
+  }
+  $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['token' => $commande->token]));
+  $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(200);
+  $resp->getBody()->write(json_encode($commande->toArray()));
+  return $resp;
+}
+public function getFacture (Request $req,Response $resp,$args) {
+   try{
+
+            if($commande = Commande::Select("nom_client","prenom_client")->where('id',"=",$args['id'])->firstOrFail())
+            {
+
+                // si j'obtient la commande
+                array_push($this->result,$commande);
+
+                // je veux la liste des items de la commande
+                $items = Item::where("commande_id","=",$args['id'])->with('sandwich','size')->get();
+
+                foreach ($items as $item){
+
+                    $tabItem = array('items' => $item);
+                    array_push($this->result,$tabItem);
+                }
+
+                return Writer::json_output($resp,200,$this->result);
+
+            } else {
+
+                throw new ModelNotFoundException($req, $resp);
+            }
+
+        } catch (ModelNotFoundException $exception){
+
+            $notFoundHandler = $this->container->get('notFoundHandler');
+            return $notFoundHandler($req,$resp);
+
+        }
+
 }
 }
