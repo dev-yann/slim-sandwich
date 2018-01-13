@@ -33,29 +33,22 @@ class cardController
             $card = new Card();
             $card->id = Uuid::uuid1();
             $card->nom = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
-            $card->password = filter_var($tab["pass_client"],FILTER_SANITIZE_STRING);
+            $card->password = password_hash(filter_var($tab["pass_client"],FILTER_SANITIZE_STRING),PASSWORD_DEFAULT);
             $card->mail = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
             $card->cumul = 0;
 
             // SI LA CARTE EXIST
-            try{
-                $client = Card::select('id')->where('password',"=",$card->password)->where("mail",'=',$card->mail)->first();
 
-                if(empty($client) && !isset($client)){
+            $client = Card::where("mail",'=',$card->mail)->first();
 
-                    // ET SI IL N'A PAS DE CARTE
-                    $card->save();
+            if(empty($client) && !isset($client)){
 
-                    $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(201);
-                    $resp->getBody()->write(json_encode($card->toArray()));
-                    return $resp;
-                } else {
-                    return Writer::json_output($resp,200,"Cette carte existe déjà");
-                }
-            } catch(ModelNotFoundException $e){
+                // ET SI IL N'A PAS DE CARTE
+                $card->save();
+                Writer::json_output($resp,201,['id' => $card->id]);
 
-                $notFoundHandler = $this->container->get('notFoundHandler');
-                return $notFoundHandler($req,$resp);
+            } else {
+                return Writer::json_output($resp,200,"Cette carte existe déjà");
             }
         }
     }
