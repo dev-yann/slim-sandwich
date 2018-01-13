@@ -7,6 +7,9 @@
  */
 
 namespace lbs\control;
+use Firebase\JWT\JWT;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use lbs\model\Card;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 // peut etre utiliser cette methode dans la classe carte , a voir
@@ -25,20 +28,42 @@ class AuthController
     public function auth(Request $req, Response $resp,$args){
 
         // SI HTTP AUTHORIZATION EST MANQUANT
-        if($req->hasHeader("Authorization")){
+        if(!$req->hasHeader("Authorization")){
 
             // JE RENVOIE LE TYPE D'AUTH NECESSAIRE
-            $resp = $resp->withHeader('Content-Type','application/json')->withStatus(401);
-            $resp->withHeader('WWW-Authenticate', 'Basic realm="MonApplication"');
-            $resp->getBody()->write(json_encode('Authorisation manquante'));
-            return $resp;
-
+            $resp->withHeader('WWW-Authenticate', 'Basic realm="api.lbs.local"');
+            return Writer::json_output($resp,401,['type' => 'error', 'error' => 401, 'message' => 'no authorization header present']);
         }
 
-        // SINON L'AUTH EST BIEN ENVOYE
+        // SINON L'EN-TETE EST PRESENT
         $auth = base64_decode(explode( " ", $req->getHeader('Authorization')[0])[1]);
-        list($user, $pass) = explode(':', $auth);
-        
+        list($carteID, $pass) = explode(':', $auth);
 
+        // ALORS JE TEST AVEC LA BDD
+        try {
+            $card = Card::where('id','=',$carteID)->firstOrFail();
+
+            // SI MAUVAIS MDP
+            if (!password_verify($pass,$card->password)){
+                throw new \Exception("Bad credentials");
+            }
+        } catch (\Exception $e){
+
+            $resp->withHeader('WWW-Authenticate', 'Basic realm="api.lbs.local"');
+            $resp->withStatus(401);
+            return Writer::json_output($resp,401,['error' => $e->getMessage()]);
+        }
+
+        // SI ON ARRIVE ICI C'EST QUE TOUT EST BON : ON CREER LE TOKEN JWT
+        $mysecret = 'je suis un secret $µ°';
+        $token = JWT::encode([
+            'iss' => "http://api.lbs.local/auth",
+            'aud' => "http://api.lbs.local/",
+            'iat' => time(),
+            'exp' => time()+3600,
+            'uid' => $card->id ],
+            $mysecret, 'HS512');
+
+        return Writer::json_output($resp,201,$token);
     }
 }

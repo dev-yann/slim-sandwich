@@ -52,3 +52,4 @@ $app->delete('/item/{id}',\lbs\control\ItemController::class.':deleteItem')->set
 
 // ROUTES CARD
 $app->post('/card[/]',\lbs\control\cardController::class.':createCard');
+$app->get('/card[/]', \lbs\control\AuthController::class.':auth');
