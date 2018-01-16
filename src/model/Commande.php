@@ -18,8 +18,4 @@ class Commande extends Model
     public $keyType ='string';
     public $timestamps = false;
     public $incrementing = false;
-
-
-
-
 }

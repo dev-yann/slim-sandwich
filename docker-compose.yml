@@ -41,7 +41,7 @@ services:
 
   adminer:
      image: adminer
-     container_name: adminer.lbs.local
+     container_name: admin.lbs.local
      ports:
        - "8080:8080"
      links:
