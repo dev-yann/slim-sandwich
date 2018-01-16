@@ -4,7 +4,8 @@
     "require": {
         "illuminate/database": "^5.5",
         "ramsey/uuid": "^3.7",
-        "slim/slim": "^3.9"
+        "slim/slim": "^3.9",
+        "firebase/php-jwt": "^5.0.0"
     },
     "authors": [
         {
