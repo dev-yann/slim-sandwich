@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: yann
  * Date: 09/01/18
- * Time: 16:30
+ * Time: 17:20
  */
 
 namespace lbs\model;
@@ -11,13 +11,10 @@ namespace lbs\model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Card extends Model
+class Client extends Model
 {
-
-    protected $table      = 'carte';
+    protected $table      = 'client';
     protected $primaryKey = 'id';
-    public $keyType ='string';
-    public $incrementing = false;
-
-
+    public    $timestamps = false;
+    protected $hidden = ['pivot'];
 }
