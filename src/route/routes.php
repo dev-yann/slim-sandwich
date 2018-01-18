@@ -43,6 +43,7 @@ $app->get('/commande/{id}/state',\lbs\control\CommandeController::class .':getSt
 $app->get('/commandes[/]',\lbs\control\CommandeController::class .':getCommandes')->setName("commandes");
 $app->post('/commande[/]',\lbs\control\CommandeController::class .':createCommande')->setName("createCommande");
 $app->put('/commande/{id}',\lbs\control\CommandeController::class .':editCommande')->setName("editCommande");
+$app->post('/commande/{id}/pay',\lbs\control\CommandeController::class . ':payCommande');
 $app->get('/commande/{id}/facture',\lbs\control\CommandeController::class . ':getFacture')->setName("getFacture");
 //ROUTES ITEMS 
 $app->post('/item[/]',\lbs\control\ItemController::class.':addItemToCommande')->setName("addItem");
@@ -53,3 +54,4 @@ $app->delete('/item/{id}',\lbs\control\ItemController::class.':deleteItem')->set
 // ROUTES CARD
 $app->post('/card[/]',\lbs\control\cardController::class.':createCard');
 $app->get('/card[/]', \lbs\control\AuthController::class.':auth');
+

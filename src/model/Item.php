@@ -3,8 +3,6 @@
 namespace lbs\model;
 
 
-namespace lbs\model;
-
 
 use Illuminate\Database\Eloquent\Model;
 
