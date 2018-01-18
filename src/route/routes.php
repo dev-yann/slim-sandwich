@@ -53,3 +53,5 @@ $app->delete('/item/{id}',\lbs\control\ItemController::class.':deleteItem')->set
 // ROUTES CARD
 $app->post('/card[/]',\lbs\control\cardController::class.':createCard');
 $app->get('/card[/]', \lbs\control\AuthController::class.':auth');
+// ON AJOUTE LE MIDDLEWARE TOKENCONTROL QUI DÉCODE LE TOKEN ET RENVOI DES EXCEPTIONS SI ERREUR
+$app->get('/card/{id}',\lbs\control\cardController::class.':getCard')->add(\lbs\control\middleware\TokenControl::class.':tokenControl');

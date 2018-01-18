@@ -41,14 +41,44 @@ class cardController
 
             $client = Card::where("mail",'=',$card->mail)->first();
 
-            if(empty($client) && !isset($client)){
+            try{
 
-                // ET SI IL N'A PAS DE CARTE
-                $card->save();
-                Writer::json_output($resp,201,['id' => $card->id]);
+                if(empty($client) && !isset($client)){
 
-            } else {
-                return Writer::json_output($resp,200,"Cette carte existe déjà");
+                    // ET SI IL N'A PAS DE CARTE
+                    $card->save();
+                    // ON RETOURNE L'IDENTIFIANT DE LA CARTE À LA PERSONNE
+                    return Writer::json_output($resp,201,['id' => $card->id]);
+
+                } else {
+                    throw new \Exception("Une carte est déjà associé à cette email");
+
+                }
+            } catch (\Exception $e){
+                return Writer::json_output($resp,403,["error" => $e->getMessage()]);
+            }
+
+        }
+    }
+
+    public function getCard(Request $req, Response $resp,$args){
+        // LE MIDDLEWARE S'OCCUPE DES VERIFICATION SUR LE TOKEN
+        // JE DOIS QUAND MEME VERIFIER L'ID
+
+        if(isset($args['id'])){
+
+            try{
+
+                $card = Card::select('nom','mail','cumul')->where('id','=',$args['id'])->firstOrFail();
+
+                $resp = $resp->withHeader('Content-Type','application/json')->withStatus(200);
+                $resp->getBody()->write(json_encode($card));
+                return $resp;
+
+            } catch (ModelNotFoundException $e){
+
+                return Writer::json_output($resp,401,["error" => "Not found"]);
+
             }
         }
     }
