@@ -86,9 +86,7 @@ class privateCommandeController extends Pagination
                     array_push($this->result,$tabItem);
                 }
 
-
-                $data = Writer::collection($this->result);
-                return Writer::json_output($resp,200,$data);
+                return Writer::json_output($resp,200,$this->result);
 
             } else {
 
@@ -138,6 +136,5 @@ class privateCommandeController extends Pagination
             return $notFoundHandler($req,$resp);
         }
     }
-
 
 }
