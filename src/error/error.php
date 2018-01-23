@@ -11,8 +11,8 @@ return [
         return function (\Slim\Http\Request $request, \Slim\Http\Response $response) use ($c) {
             $tab = ['type' => "error" ,"error" => 404, "Message :" => "not found: Ressource non trouvée."];
 
-            $response = $response->withHeader('Content-Type','application/json');
-            $response->withStatus(404)->getBody()->write(json_encode($tab));
+            $response = $response->withHeader('Content-Type','application/json')->withStatus(404);
+            $response->getBody()->write(json_encode($tab));
             return $response;
         };
     },
