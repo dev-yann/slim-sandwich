@@ -9,7 +9,7 @@
 
 $tab = array('settings'=>['displayErrorDetails'=>true,
                           'production' => true,
-                          'tmpl_dir' => './templates'], /* chemin des templates */
+                          'tmpl_dir' => __DIR__.'/../templates'], /* chemin des templates */
 
              'view' => function($c) {
                 return new \Slim\Views\Twig (

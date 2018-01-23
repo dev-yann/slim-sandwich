@@ -4,9 +4,12 @@
 	<meta charset="UTF-8">
 	<title>Commande</title>
 </head>
+
+<!-- Template pour le résumé de la commande -->
+
 <body>
-	<header>{% include header.twig %}</header>
-	<nav>{% include nav.twig %}</nav>
+	<nav>{% include nav.html %}</nav>
+	<div class="date">{{ date }}</div>
 
 	<h2>Commande<h2>
 
@@ -22,8 +25,8 @@
 		{%endfor %}
 	</div>
 
-	<a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a>
+	 <a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a>
 
-	<footer>{% include footer.twig %}</footer>
+	<footer>{% include footer.html %}</footer>
 </body>
 </html>

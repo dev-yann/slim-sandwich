@@ -40,12 +40,12 @@ class Categoriescontroller extends Pagination {
             array_push($this->result,$link);
         }
 
-
         $data = Writer::collection($this->result);
-      return Writer::json_output($resp,200,$data);
+        //return Writer::json_output($resp,200,$data);
 
-        //return $this->container->view->render($rs, 'footer.twig'/*,
-    //  ['nombre' => $links[links[self[href]]]]*/);
+
+        return $this->container->view->render($resp, 'footer.html');
+          //                          ['elements' => $this->result['nom'] ]);
 
     }
 

@@ -4,9 +4,12 @@
 	<meta charset="UTF-8">
 	<title>Liste des {{ element }}</title>
 </head>
+
+<!-- Template pour la liste des categories et la liste des sandwichs -->
+
 <body>
-	<header>{% include header.twig %}</header>
-	<nav>{% include nav.twig %}</nav>
+	<nav>{% include nav.html %}</nav>
+	<div class="date">{{ date }}</div>
 
 	<div>nombre de  {{ element }} : {{ nombre }} </div>
 
@@ -24,8 +27,8 @@
 		{%endfor %}
 	</div>
 
-	<a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a>
+	 <a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a>
 
-	<footer>{% include footer.twig %}</footer>
+	<footer>{% include footer.html %}</footer>
 </body>
 </html>

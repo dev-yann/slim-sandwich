@@ -4,9 +4,12 @@
 	<meta charset="UTF-8">
 	<title>{{ element }}</title>
 </head>
+
+<!-- Template pour les détails d'un sandwichs ou d'une catégories-->
+
 <body>
-	<header>{% include header.twig %}</header>
-	<nav>{% include nav.twig %}</nav>
+	<nav>{% include nav.html %}</nav>
+	<div class="date">{{ date }}</div>
 
 	<h2>{{ element }}<h2>
 
@@ -18,6 +21,6 @@
 
 	<a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a>
 
-	<footer>{% include footer.twig %}</footer>
+	<footer>{% include footer.html %}</footer>
 </body>
 </html>
