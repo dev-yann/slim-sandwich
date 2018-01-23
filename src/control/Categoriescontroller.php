@@ -41,13 +41,16 @@ class Categoriescontroller extends Pagination {
         }
 
         $data = Writer::collection($this->result);
-        //return Writer::json_output($resp,200,$data);
+        return Writer::json_output($resp,200,$data);
 
+      //  return $this->container->view->render($resp, 'footer.html');
+          //                          ['elements' => [
+          //                               nom => $this->result['nom'],
+          //                               descr => $this->result['description'],
+          //                               cate => $links[self[href]
+          //                          ]]);
 
-        return $this->container->view->render($resp, 'footer.html');
-          //                          ['elements' => $this->result['nom'] ]);
-
-    }
+          }
 
     public function getCategorie(Request $req, Response $resp,$args){
 
@@ -126,7 +129,7 @@ class Categoriescontroller extends Pagination {
         // Récuperation de données envoyées
         $tab = $req->getParsedBody();
 
-        // Néttoyage de la donné recu
+        // Néttoyage de la donné recupérées
         $id = filter_var($tab['id'],FILTER_SANITIZE_STRING);
         $nom = filter_var($tab['nom'],FILTER_SANITIZE_STRING);
         $description = filter_var($tab['description'],FILTER_SANITIZE_STRING);

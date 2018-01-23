@@ -25,9 +25,6 @@ class Writer extends Pagination
     }
 
     static public function linkRessource($container,$setname,$id,$n){
-
-
-
     }
 
     static public function json_output(Response $resp,$int,$data){

@@ -3,24 +3,24 @@
 <head>
 	<meta charset="UTF-8">
 	<link rel="stylesheet"   href="../css/main.css">
-	<title>{{ element }}</title>
+	<title>Sandwichs</title>
 </head>
 
 <!-- Template pour les détails d'un sandwichs ou d'une catégories-->
 
 <body>
 	<nav>{% include nav.html %}</nav>
-	<div class="date">{{ date }}</div>
+	<!-- <div class="date">{{ date }}</div> -->
 
-	<h2>{{ element }}<h2>
+	<h2>Sandwichs<h2>
 
 	<div class="element">
  		<h1>{{ element.nom }}</h1>
 		<p>{{ element.descr }}</p>
-		<a href="{{ element.cate }}">Voir la catégorie</a>
+		<a href=" {{ element.cate }} ">Voir la catégorie</a>
 	</div>
 
-	<a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a>
+	<!-- <a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a> -->
 
 	<footer>{% include footer.html %}</footer>
 </body>

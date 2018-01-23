@@ -78,6 +78,10 @@ class SandwichController extends Pagination
         }
 
         $data = Writer::collection($this->result);
+        // le nom                 $this->result[0][0]['nom']
+        // la description         $this->result[0][0]['description']
+        // le nom                 $this->result[0][0]['nom']
+        // le lien                $link['links']['self']['href']
         return Writer::json_output($resp,200,$data);
     }
 
