@@ -15,6 +15,9 @@ class Item extends Model
     public function commande(){
         return $this->belongsTo(Commande::class, "commande_id");
     }
+     public function tarif(){
+        return $this->hasOne(Tarif::class);
+    }
 
     public function sandwich(){
         return $this->belongsTo(Sandwich::class,"sand_id");
