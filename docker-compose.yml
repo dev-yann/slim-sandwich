@@ -55,17 +55,16 @@ services:
 
   api:
      image: canals/php
-     container_name: api
+     container_name: api.lbs.private
      environment:
-       - VHOST_HOSTNAME=api.local
+       - VHOST_HOSTNAME=api.lbs.private.local
        - VHOST_DOCROOT=/var/www/api_private
      ports:
        - "6080:80"
        - "6443:443"
      volumes :
        - ./api_private:/var/www/api_private
-       - ./src_private:/var/www/src_private
-       - ./html_private:/var/www/html_private
+       - ./src:/var/www/src
      links :
         - mysql:db
 
@@ -120,5 +119,4 @@ services:
 # shared storage : useful for, e.g. sharing
 #   uploaded documents (img, others) between multiple services
 ########################################
-volumes:
-   data:
+
