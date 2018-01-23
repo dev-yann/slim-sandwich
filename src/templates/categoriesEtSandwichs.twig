@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>Liste des {{ element }}</title>
+</head>
+<body>
+	<header>{% include header.twig %}</header>
+	<nav>{% include nav.twig %}</nav>
+
+	<div>nombre de  {{ element }} : {{ nombre }} </div>
+
+	<h2>Liste des {{ element }}<h2>
+
+	<!-- Liste de toutes les categories-->
+	<div class="elements">
+		{% for element in elements %}
+			<div class="element">
+		 		<h1>{{ element.nom }}</h1>
+				<p>{{ element.descr }}</p>
+				<a href="{{ urlElement }}">Voir le produit</a>
+				<a href="{{ urlCommander }}">Commander</a>
+			</div>
+		{%endfor %}
+	</div>
+
+	<a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a>
+
+	<footer>{% include footer.twig %}</footer>
+</body>
+</html>

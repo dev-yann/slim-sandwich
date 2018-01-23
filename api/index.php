@@ -26,10 +26,12 @@ $app_config = array_merge($settings,$error);
 $app = new \Slim\App( new \Slim\Container($app_config));
 
 
-
+// Chargements de tous les templates twig
+//$tmpl = $twig->loadTemplate('index.twig');
 
 // require de toutes mes routes
 require_once __DIR__.'/../src/route/routes.php';
+
 
 
 

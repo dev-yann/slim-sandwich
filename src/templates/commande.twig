@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>Commande</title>
+</head>
+<body>
+	<header>{% include header.twig %}</header>
+	<nav>{% include nav.twig %}</nav>
+
+	<h2>Commande<h2>
+
+	<!-- Liste de toutes les categories-->
+	<div class="produits">
+		{% for produit in produits %}
+			<div class="produit">
+		 		<h1>{{ produit.nom }}</h1>
+        <p>{{ produit.prix }}</p>
+				<p>{{ quantite }}</p>
+        <a href="#">Supprimer</a>
+			</div>
+		{%endfor %}
+	</div>
+
+	<a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a>
+
+	<footer>{% include footer.twig %}</footer>
+</body>
+</html>

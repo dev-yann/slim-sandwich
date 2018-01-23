@@ -10,11 +10,11 @@ $app->get('/bonjour/{name}',function($req,$rep,$args){
     // le middleware est executer ici
 
     $rep->getbody()->write('bonjour '.$args['name']);
-
-
     // le middleware est executer ici
 
 });
+
+
 
 
 // ROUTES CATEGORIES
@@ -44,7 +44,7 @@ $app->get('/commandes[/]',\lbs\control\CommandeController::class .':getCommandes
 $app->post('/commande[/]',\lbs\control\CommandeController::class .':createCommande')->setName("createCommande");
 $app->put('/commande/{id}',\lbs\control\CommandeController::class .':editCommande')->setName("editCommande");
 
-//ROUTES ITEMS 
+//ROUTES ITEMS
 $app->post('/item[/]',\lbs\control\ItemController::class.':addItemToCommande')->setName("addItem");
 $app->put('/item/{id}',\lbs\control\ItemController::class.':editItem')->setName("editItem");
 $app->delete('/item/{id}',\lbs\control\ItemController::class.':deleteItem')->setName("deleteItem");

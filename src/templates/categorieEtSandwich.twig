@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>{{ element }}</title>
+</head>
+<body>
+	<header>{% include header.twig %}</header>
+	<nav>{% include nav.twig %}</nav>
+
+	<h2>{{ element }}<h2>
+
+	<div class="element">
+ 		<h1>{{ element.nom }}</h1>
+		<p>{{ element.descr }}</p>
+		<a href="{{ element.cate }}">Voir la catégorie</a>
+	</div>
+
+	<a href="{{ url }}">&laquo;</a> {{ pageCourante }} <a href="{{ url }}">&raquo;<a>
+
+	<footer>{% include footer.twig %}</footer>
+</body>
+</html>
