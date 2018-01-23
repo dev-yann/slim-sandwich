@@ -18,4 +18,16 @@ class Commande extends Model
     public $keyType ='string';
     public $timestamps = false;
     public $incrementing = false;
+
+    public function items(){
+        return $this->hasMany(Item::class);
+    }
+
+    public function sandwichs(){
+        return $this->belongsToMany(Sandwich::class, 'sand2com', 'com_id', 'sand_id');
+    }
+
+
+
 }
+

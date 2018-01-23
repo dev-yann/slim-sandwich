@@ -44,6 +44,10 @@ $app->get('/commandes[/]',\lbs\control\CommandeController::class .':getCommandes
 $app->post('/commande[/]',\lbs\control\CommandeController::class .':createCommande')->setName("createCommande");
 $app->put('/commande/{id}',\lbs\control\CommandeController::class .':editCommande')->setName("editCommande");
 
+
+$app->post('/commande/{id}/pay',\lbs\control\CommandeController::class . ':payCommande');
+$app->get('/commande/{id}/facture',\lbs\control\CommandeController::class . ':getFacture')->setName("getFacture");
+
 //ROUTES ITEMS
 $app->post('/item[/]',\lbs\control\ItemController::class.':addItemToCommande')->setName("addItem");
 $app->put('/item/{id}',\lbs\control\ItemController::class.':editItem')->setName("editItem");
@@ -53,3 +57,6 @@ $app->delete('/item/{id}',\lbs\control\ItemController::class.':deleteItem')->set
 // ROUTES CARD
 $app->post('/card[/]',\lbs\control\cardController::class.':createCard');
 $app->get('/card[/]', \lbs\control\AuthController::class.':auth');
+
+// ON AJOUTE LE MIDDLEWARE TOKENCONTROL QUI DÉCODE LE TOKEN ET RENVOI DES EXCEPTIONS SI ERREUR
+$app->get('/card/{id}',\lbs\control\cardController::class.':getCard')->add(\lbs\control\middleware\TokenControl::class.':tokenControl');
