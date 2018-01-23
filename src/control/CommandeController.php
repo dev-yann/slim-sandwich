@@ -9,6 +9,7 @@
 namespace lbs\control;
 
 
+use lbs\control\middleware\TokenControl;
 use lbs\model\Commande;
 use lbs\model\Paiement;
 use lbs\model\Sandwich;
@@ -57,6 +58,11 @@ class CommandeController
         // Création du token
       $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
       $commande->etat = "non traité";
+
+      if(isset($tab['card'])){
+          $commande->card = filter_var($tab["card"],FILTER_SANITIZE_STRING);
+
+      }
 
         // indiquer le numero de carte -> prouver que c'est le propriétaire de la carte
         // table carte :
@@ -229,7 +235,7 @@ class CommandeController
 
       if($commande = Commande::where('id',"=",$args['id'])->firstOrFail())
         {
-                    $tab = $req->getParsedBody();
+            $tab = $req->getParsedBody();
           $paiement = new Paiement();
           $paiement->id = Uuid::uuid1();
 

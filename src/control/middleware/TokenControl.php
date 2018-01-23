@@ -19,6 +19,11 @@ class TokenControl
 
     public function tokenControl(Request $req, Response $resp, $next){
 
+        // une personne peu faire des commandes avec sa carte de fidélité,
+        // donc on doit vérifier si l'id de la carte est bien envoyé et si
+        // elle est bien associé au token
+
+
         // TODO: le token est transporté dans le header Authorization
         if(!$req->hasHeader('Authorization')){
 
@@ -36,6 +41,7 @@ class TokenControl
             $token = JWT::decode($tokenString,$mysecret,['HS512']);
 
         } catch(ExpiredException $e){
+            // todo: voir si on doit rajouter du code ds les exceptions
 
         } catch (SignatureInvalidException $e){
 
@@ -48,5 +54,18 @@ class TokenControl
 
         $resp = $next($req,$resp);
         return $resp;
+    }
+
+    public function checkCardCommand(Request $req, Response $resp, $next){
+
+        $tab = $req->getParsedBody();
+        if(isset($tab['card'])){
+            // L'id de la carte est envoyée donc
+
+            // verification du token
+
+            // le token correspond à la carte ?
+
+        }
     }
 }
