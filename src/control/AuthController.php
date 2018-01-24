@@ -43,11 +43,11 @@ class AuthController
         // SINON L'EN-TETE EST PRESENT
         $auth = base64_decode(explode( " ", $req->getHeader('Authorization')[0])[1]);
         //SEPARATION DE L'ID DE LA CARTE ET DU MDP
-        list($carteID, $pass) = explode(':', $auth);
+        list($name, $pass) = explode(':', $auth);
 
         // ALORS JE TEST AVEC LA BDD
         try {
-            $card = Card::where('id','=',$carteID)->firstOrFail();
+            $card = Card::where('nom','=',$name)->firstOrFail();
 
             // SI MAUVAIS MDP
             if (!password_verify($pass,$card->password)){
