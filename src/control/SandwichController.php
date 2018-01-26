@@ -77,12 +77,25 @@ class SandwichController extends Pagination
             array_push($this->result,$link);
         }
 
-        $data = Writer::collection($this->result);
+        //$data = Writer::collection($this->result);
+        return $this->container->view->render($resp, 'getsandwichs.html', [
+            'element'  =>  'test'
+        ]);
+
+      /*  return $this->container->view->render($resp, 'getsandwichs.html', [
+            'elements'  => [
+              'nom' =>  $this->result[0][0]['nom'],
+              'descr' => $this->result[0][0]['description']
+            ]
+        ]);*/
+
+
         // le nom                 $this->result[0][0]['nom']
         // la description         $this->result[0][0]['description']
         // le nom                 $this->result[0][0]['nom']
         // le lien                $link['links']['self']['href']
-        return Writer::json_output($resp,200,$data);
+
+        //return Writer::json_output($resp,200,$data);
     }
 
     public function getSandwichOfCategorie(Request $req, Response $resp,$args){

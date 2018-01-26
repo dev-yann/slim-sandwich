@@ -12,6 +12,7 @@ namespace lbs\control;
 use lbs\model\Commande;
 use lbs\model\Paiement;
 use lbs\model\Sandwich;
+use lbs\model\Tarif;
 use lbs\control\Pagination;
 use lbs\model\Item;
 use Ramsey\Uuid\Uuid;
@@ -194,7 +195,7 @@ class CommandeController
 
       if($commande = Commande::Select("nom_client","prenom_client","etat")->where('etat','=','paid')->where('id',"=",$args['id'])->firstOrFail())
         {
-
+          $somme = 0;
                 // si j'obtient la commande
           array_push($this->result,$commande);
 
@@ -202,12 +203,15 @@ class CommandeController
           $items = Item::where("commande_id","=",$args['id'])->with('sandwich','size')->get();
 
           foreach ($items as $item){
-            $test = Sandwich::where("id","=",$item->sandwich->id)->first()->sizes()->get();
-            $tabItem = array('item' => $item->sandwich->nom,'taille id' => $item->taille_id,'quantite' => $item ->quantite, 'prix unitaire' => $item);
+
+            $prix = Tarif::select("prix")->where("taille_id","=",$item->taille_id)->where("sand_id","=",$item->sand_id)->first();
+ 
+            $tabItem = array('item' => $item->sandwich->nom,'taille id' => $item->taille_id,'quantite' => $item ->quantite, 'prix unitaire' => $prix->prix,'prix items' => $item->quantite * $prix->prix);
+            $somme += $item->quantite * $prix->prix;
     
             array_push($this->result,$tabItem);
           }
-
+          array_push($this->result,array("prix total" => $somme));
           return Writer::json_output($resp,200,$this->result);
 
         } else {

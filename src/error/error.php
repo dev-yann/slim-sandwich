@@ -33,11 +33,11 @@ return [
         };
     },
 
-    'errorHandler' => function ($c) {
+  /*  'errorHandler' => function ($c) {
         return function ($request, $response, $exception) use ($c) {
             return $c['response']->withStatus(500)
                 ->withHeader('Content-Type', 'text/html')
                 ->write('Something went wrong!: Internal Server Error');
         };
-    }
+    }*/
 ];
