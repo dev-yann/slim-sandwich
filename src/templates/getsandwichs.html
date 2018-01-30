@@ -1,17 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
 	<title>Liste des sandwichs</title>
-	<!--Import Google Icon Font-->
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-	<!--Import materialize.css-->
-	<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
-
-	<!--Let browser know website is optimized for mobile-->
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
+	{% include "head.html" %}
 </head>
 <style>
 	section{
@@ -20,7 +11,7 @@
 	h2{
 		font-size:20pt;
 		margin-left:25px;
-l	}
+	}
 	}
 	.infos div div{
 		text-align:center;
@@ -39,27 +30,20 @@ l	}
 </style>
 <body>
 	<nav>
-		<div class="nav-wrapper orange accent-2">
-			<a href="#" class="brand-logo">API Sandwichs</a>
-			<ul id="nav-mobile" class="right hide-on-med-and-down">
-				<li><a href="#">Les sandwichs</a></li>
-				<li><a href="#">Les catégories</a></li>
-				<li><a href="#">Le Panier</a></li>
-				<li><a href="#">S'authentifier</a></li>
-			</ul>
-		</div>
+		{% include "navbar.html" %}
 	</nav>
 
 	<section class="row infos">
 		<div class="col l10 m12 offset-l1">
 			<div class="col l4 m6 s12">
-				<h2>68 sandwichs</h2>
+				<h2>{{count}} sandwichs</h2>
 			</div>
 			<div class="col l4 offset-l4">
 				<div class="col l12">
 					<p style="text-align:left;">10 sandwichs / page</p>
 
 					<p style="text-align:right;">10 janvier 2018</p>
+
 				</div>
 			</div>
 		</div>
@@ -67,112 +51,32 @@ l	}
 
 	<section class="row">
 		<div class="col l10 m12 offset-l1">
-<p>Nom du sandwich</p>
 
 			{% for sandwich in sandwichs %}
-				<p>{{ sandwich.nom }}</p>
-			{% endfor %}
-
 				<div class="col l4 m6 s12">
 					<div class="card">
 						<div class="card-content">
-							<h3>test</h3>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget enim ornare, ullamcorper felis in, tincidunt turpis.	</p>
+							<h3>{{sandwich.nom}}</h3>
+							<p>{{sandwich.description}}</p>
 						</div>
 						<div class="card-action">
-							<a href="#">EN SAVOIR PLUS</a>
+							<a href="{{sandwich.lien}}">EN SAVOIR PLUS</a>
 						</div>
 					</div>
-				  </div>
+				 </div>
+				{% endfor %}
 
-
-
-			  <div class="col l4 m6 s12">
-				  <div class="card">
-					<div class="card-content">
-					<h3>{{ element.nom }}</h3>
-					  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget enim ornare, ullamcorper felis in, tincidunt turpis.	</p>
-					</div>
-					<div class="card-action">
-					  <a href="#">EN SAVOIR PLUS</a>
-					</div>
-				</div>
-			  </div>
-
-			  <div class="col l4 m6 s12">
-				  <div class="card">
-					<div class="card-content">
-					<h3>Sandwichs XXL</h3>
-					  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget enim ornare, ullamcorper felis in, tincidunt turpis.	</p>
-					</div>
-					<div class="card-action">
-					  <a href="#">EN SAVOIR PLUS</a>
-					</div>
-				</div>
-			  </div>
-
-			  <div class="col l4 m6 s12">
-				  <div class="card">
-					<div class="card-content">
-					<h3>Sandwichs XXL</h3>
-					  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget enim ornare, ullamcorper felis in, tincidunt turpis.	</p>
-					</div>
-					<div class="card-action">
-					  <a href="#">EN SAVOIR PLUS</a>
-					</div>
-				</div>
-			  </div>
-
-			  <div class="col l4 m6 s12">
-				  <div class="card">
-					<div class="card-content">
-					<h3>Sandwichs XXL</h3>
-					  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget enim ornare, ullamcorper felis in, tincidunt turpis.	</p>
-					</div>
-					<div class="card-action">
-					  <a href="#">EN SAVOIR PLUS</a>
-					</div>
-				</div>
-			  </div>
-
-			  <div class="col l4 m6 s12">
-				  <div class="card">
-					<div class="card-content">
-					<h3>Sandwichs XXL</h3>
-					  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget enim ornare, ullamcorper felis in, tincidunt turpis.	</p>
-					</div>
-					<div class="card-action">
-					  <a href="#">EN SAVOIR PLUS</a>
-					</div>
-				</div>
-			</div>
-
-
-		</div>
+			 </div>
 	</section>
-
-	 <!-- Quand < ou > n'est pas disponible li.disabled -->
 
 	<section class="row">
-		<div class="pagination">
-		<ul class="page">
-			<li class="waves-effect"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-			<li class="waves-effect active"><a href="#!">3</a></li>
-			<li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-		</ul>
+		{% include "navigation.html" %}
 	</section>
 
-
-
-
 	<footer class="page-footer  orange accent-2">
-		<div class="container">
-			Nicolas Bobelet / Yann Dumas / Alexandra Martin
-			<a class="grey-text text-lighten-4 right">Projet étudiant de Cisiie 2017/2018</a>
-		</div>
-    </footer>
+		{% include "footer.html" %}
+	</footer>
 
-	<!--Import jQuery before materialize.js-->
 	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="js/materialize.min.js"></script>
 </body>

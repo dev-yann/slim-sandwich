@@ -32,23 +32,24 @@ class Categoriescontroller extends Pagination {
         $query = Categorie::select('id','nom','description');
         $categories = Pagination::queryNsize($req,$query);
 
+        $unecate = [];
+
         foreach ($categories as $category){
 
             $link = array('links' => ['self' => ['href' => $this->container['router']->pathFor('categorie', ['id'=>$category->id])]]);
             array_push($link,$category);
 
             array_push($this->result,$link);
+
+
+            $cate = ['nom' => $category->nom,
+                     'description' => $category->description,
+                     'lien' => $link['links']['self']['href'] ];
+
+            array_push($unecate, $cate);
         }
 
-        $data = Writer::collection($this->result);
-        return Writer::json_output($resp,200,$data);
-
-        //return $this->container->view->render($resp, 'getcategories.html', []);
-          //                          ['elements' => [
-          //                               nom => $this->result['nom'],
-          //                               descr => $this->result['description'],
-          //                               cate => $links[self[href]
-          //                          ]]);
+         return $this->container->view->render($resp, 'getcategories.html',['categories'=>$unecate]);
 
           }
 
@@ -61,7 +62,18 @@ class Categoriescontroller extends Pagination {
                 $link = array('links' => ['sandwichs' => ['href' => $this->container['router']->pathFor('sandwichOfCategorie', ['id'=>$categorie->id])]]);
 
                 $data = Writer::ressource($categorie,$link,'categorie');
-                return Writer::json_output($resp,200,$data);
+
+                $id = $categorie->id;
+                $idpred = $id -1;
+                $idsuivant = $id +1;
+
+
+                return $this->container->view->render($resp, 'getone.html',[
+                  'nom' => $categorie->nom,
+                  'description' => $categorie->description,
+                  'precedent'=>$idpred,
+                  'suivant'=>$idsuivant,
+                  'numero' => $categorie->id]);
 
             } else {
                 throw new ModelNotFoundException($req, $resp);
@@ -69,8 +81,8 @@ class Categoriescontroller extends Pagination {
 
         } catch (ModelNotFoundException $exception){
 
-            $notFoundHandler = $this->container->get('notFoundHandler');
-            return $notFoundHandler($req,$resp);
+          return $this->container->view->render($resp, 'erreur404.html',['message'=>'La catégorie n\'existe pas']);
+
         }
     }
 

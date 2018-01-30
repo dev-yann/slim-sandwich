@@ -41,13 +41,28 @@ class SandwichController extends Pagination
                 $categories = $sandwich->categories()->select('id','nom')->get();
                 $tailles = $sandwich->sizes()->select('id','nom','prix')->get();
 
-                $link = array('links' => ['categories' => ['href' => $this->container['router']->pathFor('categorieOfSandwich', ['id'=>$sandwich->id])],'tailles' => ['href' => $this->container['router']->pathFor('sizeOfSandwich', ['id'=>$sandwich->id])]]);
+                $id = $sandwich->id;
+                $idpred = $id -1;
+                $idsuivant = $id +1;
+
+                $lestailles=[];
+
+                foreach ($tailles as $taille){
+
+                    $unetaille = ['nom' => $taille->nom,
+                                'prix' => $taille->prix];
+
+                    array_push($lestailles, $unetaille);
+                }
 
 
-                $data = Writer::ressource($sandwich,$link,'sandwich');
-                array_push($data, ["Categories" => [$categories]]);
-                array_push($data, ["Tailles" => [$tailles]]);
-                return Writer::json_output($resp,200,$data);
+                return $this->container->view->render($resp, 'getone.html',[
+                  'nom' => $sandwich->nom,
+                  'description' => $sandwich->description,
+                  'precedent'=>$idpred,
+                  'suivant'=>$idsuivant,
+                  'numero' => $sandwich->id,
+                  'tailles'=>$tailles]);
 
             } else {
 
@@ -56,47 +71,34 @@ class SandwichController extends Pagination
 
         } catch (ModelNotFoundException $exception){
 
-            $notFoundHandler = $this->container->get('notFoundHandler');
-            return $notFoundHandler($req,$resp);
+            return $this->container->view->render($resp, 'erreur404.html',['message'=>'Le sandwich n\'existe pas']);
 
         }
-
     }
 
     // RÉCUPÉRER PLUSIEURS SANDWICHS
     public function getSandwich(Request $req, Response $resp,$args){
 
         $query = Sandwich::select('id','nom','description','img');
-        $sandwichs = Pagination::queryNsize($req,$query);
+          $sandwichs = Pagination::queryNsize($req,$query);
+          $sand=[];
 
         foreach ($sandwichs as $sandwich){
 
-            $link = array('links' => ['self' => ['href' => $this->container['router']->pathFor('categorie', ['id'=>$sandwich->id])]]);
+            $link = array('links' => ['self' => ['href' => $this->container['router']->pathFor('sandwich', ['id'=>$sandwich->id])]]);
             array_push($link,$sandwich);
 
             array_push($this->result,$link);
+
+
+            $unsand = ['nom' => $sandwich->nom,
+                        'description' => $sandwich->description,
+                      'lien' => $link['links']['self']['href'] ];
+
+            array_push($sand, $unsand);
         }
 
-        //$data = Writer::collection($this->result);
-        return $this->container->view->render($resp, 'getsandwichs.html', [
-          $sandwichs =[
- [
-
-            [ 'nom'=>'le test' ] ,
-            [ 'nom'=>'le test' ]
-          ]]
-
-        ]);
-
-        $tmpl->display( [ 'sandwichs' => $tliens ] );
-
-
-        // le nom                 $this->result[0][0]['nom']
-        // la description         $this->result[0][0]['description']
-        // le nom                 $this->result[0][0]['nom']
-        // le lien                $link['links']['self']['href']
-
-        //return Writer::json_output($resp,200,$data);
+          return $this->container->view->render($resp, 'getsandwichs.html',['sandwichs'=>$sand]);
     }
 
     public function getSandwichOfCategorie(Request $req, Response $resp,$args){
