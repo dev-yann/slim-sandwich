@@ -26,9 +26,16 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class CommandeController
 {
     // Récupération du conteneur de dépendance
-  private $container;
+    /**
+     * @var \Slim\Container
+     */
+    private $container;
 
-  public function __construct(\Slim\Container $container){
+    /**
+     * CommandeController constructor.
+     * @param \Slim\Container $container
+     */
+    public function __construct(\Slim\Container $container){
     $this->container = $container;
     $this->result = array();
   }
@@ -39,6 +46,11 @@ class CommandeController
      *
      * */
     // todo: ajouter le controle des champs
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @return Response|static
+     */
     public function createCommande(Request $req, Response $resp) {
         // Récupération des données envoyées
 
@@ -82,13 +94,26 @@ class CommandeController
       }
     }
 
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
     public function getCommandes (Request $req, Response $resp, $args) {
       $query = Commande::all();
 
       return Writer::json_output($resp,200,$query);
     }
 
-    public function getState (Request $req, Response $resp,$args) {
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getState (Request $req, Response $resp, $args) {
      try{
 
       if($commande = Commande::select("etat")->where('id',"=",$args['id'])->firstOrFail())
@@ -107,7 +132,15 @@ class CommandeController
         return $notFoundHandler($req,$resp);
       }
     }
-    public function getCommande (Request $req, Response $resp,$args) {
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getCommande (Request $req, Response $resp, $args) {
 
       $token = $req->getQueryParam("token",1);
       $otherToken = $req->getHeader('x-lbs-token');
@@ -148,7 +181,13 @@ class CommandeController
       }
     }
 
-    public function editCommande(Request $req,Response $resp,$args) {
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function editCommande(Request $req, Response $resp, $args) {
       $commande = Commande::where("id","=",$args["id"])->first();
       $tab = $req->getParsedBody();
       $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
@@ -171,7 +210,15 @@ class CommandeController
       $resp->getBody()->write(json_encode($commande->toArray()));
       return $resp;
     }
-    public function getFacture (Request $req,Response $resp,$args) {
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getFacture (Request $req, Response $resp, $args) {
      try{
 
       if($commande = Commande::Select("nom_client","prenom_client","etat")->where('etat','=','paid')->where('id',"=",$args['id'])->firstOrFail())
@@ -209,7 +256,14 @@ class CommandeController
 
     }
 
-    public function payCommande (Request $req,Response $resp,$args) {
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function payCommande (Request $req, Response $resp, $args) {
      try{
 
       if($commande = Commande::where('id',"=",$args['id'])->firstOrFail())

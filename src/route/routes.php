@@ -5,17 +5,6 @@
  * Date: 22/11/17
  * Time: 11:52
  */
-$app->get('/',\lbs\control\Home::class . ':home');
-$app->get('/bonjour/{name}',function($req,$rep,$args){
-    // le middleware est executer ici
-
-    $rep->getbody()->write('bonjour '.$args['name']);
-
-
-    // le middleware est executer ici
-
-});
-
 
 // ROUTES CATEGORIES
 $app->get('/categories[/]', \lbs\control\Categoriescontroller::class . ':getCategories')->setName('categories');

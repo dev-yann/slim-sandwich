@@ -12,9 +12,29 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 
 class Pagination
 {
+    /**
+     * @var
+     */
+    /**
+     * @var
+     */
+    /**
+     * @var
+     */
+    /**
+     * @var
+     */
+    /**
+     * @var
+     */
     protected static $t,$total,$size,$page,$date;
 
-    protected static function myPagination(Request $req,$query){
+    /**
+     * @param Request $req
+     * @param $query
+     * @return mixed
+     */
+    protected static function myPagination(Request $req, $query){
 
         // DEFINITION DE LA DATE
         self::$date = date("d-m-y");
@@ -61,7 +81,12 @@ class Pagination
 
     }
 
-    protected static function queryNsize($req,$query){
+    /**
+     * @param $req
+     * @param $query
+     * @return mixed
+     */
+    protected static function queryNsize($req, $query){
 
         return self::myPagination($req,$query)->skip((self::$page - 1) * self::$size)->take(self::$size)->get();
     }

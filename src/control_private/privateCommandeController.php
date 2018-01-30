@@ -20,13 +20,29 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class privateCommandeController extends Pagination
 {
-    // Récupération du conteneur de dépendance
+
+    /**
+     * @var \Slim\Container
+     */
     private $container;
+    /**
+     * @var array
+     */
     private $result;
+
+    /**
+     * privateCommandeController constructor.
+     * @param \Slim\Container $container
+     */
     public function __construct(\Slim\Container $container){
         $this->container = $container;
         $this->result = array();
     }
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     */
     public function test (Request $req, Response $resp) {
         echo "test";
     }
@@ -35,7 +51,13 @@ class privateCommandeController extends Pagination
     /*liste des commandes, filtrées sur l'état , triée par date de livraison et ordre de création –
      permet au point de vente de planifier la préparation des commandes*/
 
-    public function getCommandes(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function getCommandes(Request $req, Response $resp, $args){
 
         $query = Commande::select("id", "nom_client", "prenom_client", "mail_client", "livraison","token" ,"etat");
 
@@ -72,7 +94,14 @@ class privateCommandeController extends Pagination
 
     // a travailler, la base doit etre nikel pour que ce soit possible
     */
-    public function getCommande(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getCommande(Request $req, Response $resp, $args){
 
         try{
 
@@ -108,7 +137,15 @@ class privateCommandeController extends Pagination
 
 
     // CHANGE "NON TRAITE" EN "TRAITÉ"
-    public function changeStateCommande(Request $req, Response $resp,$args){
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function changeStateCommande(Request $req, Response $resp, $args){
 
         // Récuperation de données envoyées
         $tab = $req->getParsedBody();

@@ -17,9 +17,19 @@ use \Psr\Http\Message\ResponseInterface as Response;
 class sizeController extends Pagination
 {
 
+    /**
+     * @var \Slim\Container
+     */
     private $container;
+    /**
+     * @var array
+     */
     private $result;
 
+    /**
+     * sizeController constructor.
+     * @param \Slim\Container $container
+     */
     public function __construct(\Slim\Container $container){
 
         $this->container = $container;
@@ -28,7 +38,14 @@ class sizeController extends Pagination
     }
 
 
-    public function sizeOfSandwich(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function sizeOfSandwich(Request $req, Response $resp, $args){
 
        try{
             $sandwich = Sandwich::where('id','=',$args['id'])->firstOrFail();

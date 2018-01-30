@@ -18,13 +18,26 @@ use lbs\control\Writer;
 
 class TokenControl
 {
+    /**
+     * @var \Slim\Container
+     */
     private $container;
 
+    /**
+     * TokenControl constructor.
+     * @param \Slim\Container $container
+     */
     public function __construct(\Slim\Container $container){
         $this->container = $container;
         $this->result = array();
     }
 
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $next
+     * @return Response|static
+     */
     public function tokenControl(Request $req, Response $resp, $next){
 
         // une personne peu faire des commandes avec sa carte de fidélité,
@@ -65,6 +78,13 @@ class TokenControl
         return $resp;
     }
 
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $next
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
     public function checkCardCommand(Request $req, Response $resp, $next){
         /*
 
@@ -95,9 +115,7 @@ class TokenControl
                 // $token est un objet qui a pour propriété les claims du token
                 $token = JWT::decode($tokenString,$mysecret,['HS512']);
 
-                // todo: le temps est expirée, créer un nv token, il suffit ensuite de récupérer l'id de la carte dans le payload et la comparé à celle existant dans la base, ensuite il restera juste a decommenter la commande controller
                 if($token->uid == $tab['card']){
-                    // ici, l'id de la carte dans le token est le meme que celui envoyé
                     try{
 
                         $testCard = Card::select('id')->where('id','=',$token->uid)->firstOrFail();
@@ -108,7 +126,9 @@ class TokenControl
                         return $notFoundHandler($req,$resp);
                     }
 
-                } else {return Writer::json_output($resp,401,['error' => "wrong credentials"]);}
+                } else {
+                    return Writer::json_output($resp,401,['error' => "wrong credentials"]);
+                }
 
             } catch(ExpiredException $e){
                 // todo: voir si on doit rajouter du code ds les exceptions

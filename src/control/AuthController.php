@@ -19,13 +19,26 @@ use \Psr\Http\Message\ResponseInterface as Response;
 class AuthController
 {
     // Récupération du conteneur de dépendance
+    /**
+     * @var \Slim\Container
+     */
     private $container;
 
+    /**
+     * AuthController constructor.
+     * @param \Slim\Container $container
+     */
     public function __construct(\Slim\Container $container){
         $this->container = $container;
     }
 
-    public function auth(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function auth(Request $req, Response $resp, $args){
 
         // EN UTILISANT RESTED : ENVOYE
         // AUTHO : BASIC

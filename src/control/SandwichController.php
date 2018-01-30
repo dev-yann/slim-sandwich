@@ -16,13 +16,31 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use lbs\model\Sandwich;
 use lbs\control\Pagination;
 
+/*
+ * Class SandwichController
+ *
+ * Permet de générer les ressources concernant les
+ * sandwichs
+ * */
+
 class SandwichController extends Pagination
 {
-    // Récupération du conteneur de dépendance
 
+    /**
+     * @var \Slim\Container
+     */
     private $container;
+
+    /**
+     * @var array
+     */
     private $result;
 
+
+    /**
+     * SandwichController constructor.
+     * @param \Slim\Container $container
+     */
     public function __construct(\Slim\Container $container){
 
         $this->container = $container;
@@ -30,9 +48,14 @@ class SandwichController extends Pagination
 
     }
 
-
-    // RÉCUPÉRER UN SANDWICH
-    public function getOneSandwich(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getOneSandwich(Request $req, Response $resp, $args){
 
         try{
 
@@ -55,16 +78,18 @@ class SandwichController extends Pagination
             }
 
         } catch (ModelNotFoundException $exception){
-
             $notFoundHandler = $this->container->get('notFoundHandler');
             return $notFoundHandler($req,$resp);
-
         }
-
     }
 
-    // RÉCUPÉRER PLUSIEURS SANDWICHS
-    public function getSandwich(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function getSandwich(Request $req, Response $resp, $args){
 
         $query = Sandwich::select('id','nom','description','img');
         $sandwichs = Pagination::queryNsize($req,$query);
@@ -81,7 +106,14 @@ class SandwichController extends Pagination
         return Writer::json_output($resp,200,$data);
     }
 
-    public function getSandwichOfCategorie(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getSandwichOfCategorie(Request $req, Response $resp, $args){
 
         try{
             $categorie = Categorie::where('id','=',$args['id'])->firstOrFail();
