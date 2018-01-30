@@ -20,4 +20,7 @@ class Card extends Model
     public $incrementing = false;
 
 
+    public function commandes(){
+        return $this->hasMany(Commande::class,'card');
+    }
 }

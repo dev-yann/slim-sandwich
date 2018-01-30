@@ -19,13 +19,26 @@ use \Psr\Http\Message\ResponseInterface as Response;
 class AuthController
 {
     // Récupération du conteneur de dépendance
+    /**
+     * @var \Slim\Container
+     */
     private $container;
 
+    /**
+     * AuthController constructor.
+     * @param \Slim\Container $container
+     */
     public function __construct(\Slim\Container $container){
         $this->container = $container;
     }
 
-    public function auth(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function auth(Request $req, Response $resp, $args){
 
         // EN UTILISANT RESTED : ENVOYE
         // AUTHO : BASIC
@@ -42,11 +55,12 @@ class AuthController
 
         // SINON L'EN-TETE EST PRESENT
         $auth = base64_decode(explode( " ", $req->getHeader('Authorization')[0])[1]);
-        list($carteID, $pass) = explode(':', $auth);
+        //SEPARATION DE L'ID DE LA CARTE ET DU MDP
+        list($name, $pass) = explode(':', $auth);
 
         // ALORS JE TEST AVEC LA BDD
         try {
-            $card = Card::where('id','=',$carteID)->firstOrFail();
+            $card = Card::where('nom','=',$name)->firstOrFail();
 
             // SI MAUVAIS MDP
             if (!password_verify($pass,$card->password)){

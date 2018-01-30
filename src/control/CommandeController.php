@@ -9,6 +9,7 @@
 namespace lbs\control;
 
 
+use lbs\control\middleware\TokenControl;
 use lbs\model\Commande;
 use lbs\model\Paiement;
 use lbs\model\Sandwich;
@@ -25,9 +26,16 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class CommandeController
 {
     // Récupération du conteneur de dépendance
-  private $container;
+    /**
+     * @var \Slim\Container
+     */
+    private $container;
 
-  public function __construct(\Slim\Container $container){
+    /**
+     * CommandeController constructor.
+     * @param \Slim\Container $container
+     */
+    public function __construct(\Slim\Container $container){
     $this->container = $container;
     $this->result = array();
   }
@@ -37,16 +45,28 @@ class CommandeController
      * Renvoie $resp : tableau représentant la commande
      *
      * */
+    // todo: ajouter le controle des champs
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @return Response|static
+     */
     public function createCommande(Request $req, Response $resp) {
-
         // Récupération des données envoyées
-      $tab = $req->getParsedBody();
 
-      $commande = new Commande();
+        $tab = $req->getParsedBody();
+        $commande = new Commande();
+        $cardId = $req->getAttribute('card');
 
-        // id globalement unique - unicité très probable
+        if(!is_null($cardId)){
+            $commande->card = $cardId->id;
+            // association de la carte et de de la commande,
+            // voir avec le prof si c'est juste
+            $commande->card()->associate($cardId);
+        }
+
+      // id globalement unique - unicité très probable
       $commande->id = Uuid::uuid1();
-
       $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
       $commande->prenom_client = filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
       $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
@@ -58,28 +78,6 @@ class CommandeController
       $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
       $commande->etat = "non traité";
 
-        // indiquer le numero de carte -> prouver que c'est le propriétaire de la carte
-        // table carte :
-        // id , nom, mdp -> /carte/id/auth ( nom + mdp) -> reponse : token jwt( token avec de l'info : ex: num de la carte)  avec ce token je peu :
-        // lire la carte -> get /carte/id + token
-        // à partir de la je peux créer une commande avec le token jwt de la carte , la commande est donc associé à la carte ( associate je pense )
-
-        // VERIFICATION DES DONNÉES RECU
-       /*
-       Mécanisme de validation des données reçues pour la création d'une commande.
-
-       Il faut valider:
-
-       présence obligatoire du nom, mail et date/heure de livraison,
-       présence facultative du prénom de l'utilisateur,
-       format des noms-prénoms : chaîne de caractères alphabétiques, format de l'@mail
-       format de la date, et validité de la date (date future uniquement)
-
-       */
-
-
-       // if(isset($tab['nom_client']) &&(isset($tab['prenom_client'])) && (isset($tab['mail_client'])) && (isset($tab['date'])))
-       //  {
        try{
 
         $commande->save();
@@ -94,19 +92,28 @@ class CommandeController
         $resp->getBody()->write(json_encode(['type' => 'error', 'error' => 500, 'message' => $e->getMessage()]));
 
       }
-   //   else {
-
-   //   Writer::json_output($resp,400, "Données manquantes");
-   // }
     }
 
-
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
     public function getCommandes (Request $req, Response $resp, $args) {
       $query = Commande::all();
 
       return Writer::json_output($resp,200,$query);
     }
-    public function getState (Request $req, Response $resp,$args) {
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getState (Request $req, Response $resp, $args) {
      try{
 
       if($commande = Commande::select("etat")->where('id',"=",$args['id'])->firstOrFail())
@@ -125,7 +132,15 @@ class CommandeController
         return $notFoundHandler($req,$resp);
       }
     }
-    public function getCommande (Request $req, Response $resp,$args) {
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getCommande (Request $req, Response $resp, $args) {
 
       $token = $req->getQueryParam("token",1);
       $otherToken = $req->getHeader('x-lbs-token');
@@ -166,7 +181,13 @@ class CommandeController
       }
     }
 
-    public function editCommande(Request $req,Response $resp,$args) {
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function editCommande(Request $req, Response $resp, $args) {
       $commande = Commande::where("id","=",$args["id"])->first();
       $tab = $req->getParsedBody();
       $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
@@ -189,7 +210,15 @@ class CommandeController
       $resp->getBody()->write(json_encode($commande->toArray()));
       return $resp;
     }
-    public function getFacture (Request $req,Response $resp,$args) {
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getFacture (Request $req, Response $resp, $args) {
      try{
 
       if($commande = Commande::Select("nom_client","prenom_client","etat")->where('etat','=','paid')->where('id',"=",$args['id'])->firstOrFail())
@@ -227,12 +256,19 @@ class CommandeController
 
     }
 
-    public function payCommande (Request $req,Response $resp,$args) {
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function payCommande (Request $req, Response $resp, $args) {
      try{
 
       if($commande = Commande::where('id',"=",$args['id'])->firstOrFail())
         {
-                    $tab = $req->getParsedBody();
+            $tab = $req->getParsedBody();
           $paiement = new Paiement();
           $paiement->id = Uuid::uuid1();
 
