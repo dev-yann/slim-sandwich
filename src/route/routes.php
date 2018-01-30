@@ -6,6 +6,7 @@
  * Time: 11:52
  */
 
+
 // ROUTES CATEGORIES
 $app->get('/categories[/]', \lbs\control\Categoriescontroller::class . ':getCategories')->setName('categories');
 $app->get('/categories/{id}[/]', \lbs\control\Categoriescontroller::class . ':getCategorie')->setName('categorie'); // setName fais le lien avec le pathFor du controller, il permet de seulement modifier les routes et de ne pas se préocuper du controller pour le pathfor
@@ -47,4 +48,4 @@ $app->get('/card/{id}',\lbs\control\cardController::class.':getCard')->add(\lbs\
 
 
 // ROUTES AUTHORIZATION
-$app->get('/auth[/]', \lbs\control\AuthController::class.':auth');
+$app->get('/card[/]', \lbs\control\middleware\AuthController::class.':auth');
