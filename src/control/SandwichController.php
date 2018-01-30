@@ -79,15 +79,16 @@ class SandwichController extends Pagination
 
         //$data = Writer::collection($this->result);
         return $this->container->view->render($resp, 'getsandwichs.html', [
-            'element'  =>  'test'
+          $sandwichs =[
+ [
+
+            [ 'nom'=>'le test' ] ,
+            [ 'nom'=>'le test' ]
+          ]]
+
         ]);
 
-      /*  return $this->container->view->render($resp, 'getsandwichs.html', [
-            'elements'  => [
-              'nom' =>  $this->result[0][0]['nom'],
-              'descr' => $this->result[0][0]['description']
-            ]
-        ]);*/
+        $tmpl->display( [ 'sandwichs' => $tliens ] );
 
 
         // le nom                 $this->result[0][0]['nom']

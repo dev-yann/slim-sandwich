@@ -10,14 +10,27 @@ use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use lbs\model\Card;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use lbs\control\Writer;
 
 class TokenControl
 {
+    private $container;
+
+    public function __construct(\Slim\Container $container){
+        $this->container = $container;
+        $this->result = array();
+    }
 
     public function tokenControl(Request $req, Response $resp, $next){
+
+        // une personne peu faire des commandes avec sa carte de fidélité,
+        // donc on doit vérifier si l'id de la carte est bien envoyé et si
+        // elle est bien associé au token
+
 
         // TODO: le token est transporté dans le header Authorization
         if(!$req->hasHeader('Authorization')){
@@ -35,7 +48,9 @@ class TokenControl
             $tokenString = sscanf($header,"Bearer %s")[0];
             $token = JWT::decode($tokenString,$mysecret,['HS512']);
 
+
         } catch(ExpiredException $e){
+            // todo: voir si on doit rajouter du code ds les exceptions
 
         } catch (SignatureInvalidException $e){
 
@@ -48,5 +63,72 @@ class TokenControl
 
         $resp = $next($req,$resp);
         return $resp;
+    }
+
+    public function checkCardCommand(Request $req, Response $resp, $next){
+        /*
+
+        Body Parsing Middleware
+        By default, this middleware will detect the following content types:
+        application/x-www-form-urlencoded (standard web-based forms, without file uploads)
+        application/json, application/*+json (JSON payloads)
+
+        */
+        $tab = $req->getParsedBody();
+
+        // ON RECUPERE L'ID DE LA CARTE
+        if(isset($tab['card'])){
+
+            // ON VERIFIE QUE LE TOKEN D'AUTHORISATION EST BIEN ENVOYE
+            if(!$req->hasHeader('Authorization')){
+
+                $resp = $resp->withHeader('WWW-Authenticate', 'Bearer realm="api.lbs.local"');
+                return Writer::json_output($resp, 401, ['type' => 'error', 'error' => 401, 'message' => 'no authorization header present']);
+            }
+
+            // VERIFICATION DU TOKEN & VERIFICATION DE LA CARD ID
+            try{
+
+                $header = $req->getHeader('Authorization')[0];
+                $mysecret = 'je suis un secret $µ°';
+                $tokenString = sscanf($header,"Bearer %s")[0];
+                // $token est un objet qui a pour propriété les claims du token
+                $token = JWT::decode($tokenString,$mysecret,['HS512']);
+
+                // todo: le temps est expirée, créer un nv token, il suffit ensuite de récupérer l'id de la carte dans le payload et la comparé à celle existant dans la base, ensuite il restera juste a decommenter la commande controller
+                if($token->uid == $tab['card']){
+                    // ici, l'id de la carte dans le token est le meme que celui envoyé
+                    try{
+
+                        $testCard = Card::select('id')->where('id','=',$token->uid)->firstOrFail();
+                        $req = $req->withAttribute('card',$testCard);
+
+                    } catch (ModelNotFoundException $e){
+                        $notFoundHandler = $this->container->get('notFoundHandler');
+                        return $notFoundHandler($req,$resp);
+                    }
+
+                } else {return Writer::json_output($resp,401,['error' => "wrong credentials"]);}
+
+            } catch(ExpiredException $e){
+                // todo: voir si on doit rajouter du code ds les exceptions
+                return Writer::json_output($resp,401,['error' => "wrong token"]);
+            } catch (SignatureInvalidException $e){
+                return Writer::json_output($resp,401,['error' => "wrong token"]);
+            } catch (BeforeValidException $e){
+                return Writer::json_output($resp,401,['error' => "wrong token"]);
+            } catch (\UnexpectedValueException $e){
+                return Writer::json_output($resp,401,['error' => "wrong token"]);
+            }
+
+            // ON RENVOIT AVEC L'ATTRIBUT
+            $resp = $next($req,$resp);
+            return $resp;
+
+        } else {
+            // ON RENVOIT SANS L'ATTRIBUT
+            $resp = $next($req,$resp);
+            return $resp;
+        }
     }
 }

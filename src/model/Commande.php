@@ -27,6 +27,10 @@ class Commande extends Model
         return $this->belongsToMany(Sandwich::class, 'sand2com', 'com_id', 'sand_id');
     }
 
+    public function card(){
+        return $this->belongsTo(Card::class,'card');
+    }
+
 
 
 }
