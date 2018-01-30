@@ -50,7 +50,6 @@ class CommandeController
       $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
       $commande->prenom_client = filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
       $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
-        // A voir avec le prof, c'est un peu flou
       $livraison = new \DateTime($tab['date']);
       $livraison ->format('Y-m-d H:i:s');
       $commande->livraison = $livraison;
