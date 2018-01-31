@@ -7,7 +7,7 @@
  */
 
 namespace lbs\model;
-
+use lbs\model\Card;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -52,7 +52,7 @@ class Commande extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function card(){
-        return $this->belongsTo(Card::class,'card');
+        return $this->belongsTo(Card::class,'cardID');
     }
 
 

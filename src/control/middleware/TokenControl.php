@@ -38,19 +38,13 @@ class TokenControl
      * @param $next
      * @return Response|static
      */
+
     public function tokenControl(Request $req, Response $resp, $next){
 
-        // une personne peu faire des commandes avec sa carte de fidélité,
-        // donc on doit vérifier si l'id de la carte est bien envoyé et si
-        // elle est bien associé au token
-
-
-        // TODO: le token est transporté dans le header Authorization
         if(!$req->hasHeader('Authorization')){
 
             $resp = $resp->withHeader('WWW-Authenticate', 'Bearer realm="api.lbs.local"');
             return Writer::json_output($resp, 401, ['type' => 'error', 'error' => 401, 'message' => 'no authorization header present']);
-
         }
 
         try{
@@ -117,15 +111,12 @@ class TokenControl
 
                 if($token->uid == $tab['card']){
                     try{
-
-                        $testCard = Card::select('id')->where('id','=',$token->uid)->firstOrFail();
-                        $req = $req->withAttribute('card',$testCard);
+                        $req = $req->withAttribute('card',$token->uid);
 
                     } catch (ModelNotFoundException $e){
                         $notFoundHandler = $this->container->get('notFoundHandler');
                         return $notFoundHandler($req,$resp);
                     }
-
                 } else {
                     return Writer::json_output($resp,401,['error' => "wrong credentials"]);
                 }

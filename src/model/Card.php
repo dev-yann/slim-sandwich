@@ -21,6 +21,6 @@ class Card extends Model
 
 
     public function commandes(){
-        return $this->hasMany(Commande::class,'card');
+        return $this->hasMany(Commande::class,'cardID');
     }
 }

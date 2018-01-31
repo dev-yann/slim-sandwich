@@ -18,26 +18,13 @@ use \Psr\Http\Message\ResponseInterface as Response;
 class cardController
 {
     // Récupération du conteneur de dépendance
-    /**
-     * @var \Slim\Container
-     */
     private $container;
 
-    /**
-     * cardController constructor.
-     * @param \Slim\Container $container
-     */
     public function __construct(\Slim\Container $container){
         $this->container = $container;
     }
 
-    /**
-     * @param Request $req
-     * @param Response $resp
-     * @param $args
-     * @return Response|static
-     */
-    public function createCard(Request $req, Response $resp, $args){
+    public function createCard(Request $req, Response $resp,$args){
 
         $tab = $req->getParsedBody();
         // SI TOUS LES POSTS SONT ENVOYÉS
@@ -73,13 +60,7 @@ class cardController
         
     }
 
-    /**
-     * @param Request $req
-     * @param Response $resp
-     * @param $args
-     * @return Response|static
-     */
-    public function getCard(Request $req, Response $resp, $args){
+    public function getCard(Request $req, Response $resp,$args){
         // LE MIDDLEWARE S'OCCUPE DES VERIFICATION SUR LE TOKEN
         // JE DOIS QUAND MEME VERIFIER L'ID
 
@@ -87,7 +68,7 @@ class cardController
 
             try{
 
-                $card = Card::select('nom','mail','cumul')->where('id','=',$args['id'])->firstOrFail();
+                $card = Card::select('nom','mail','cumul','reduction')->where('id','=',$args['id'])->firstOrFail();
 
                 $resp = $resp->withHeader('Content-Type','application/json')->withStatus(200);
                 $resp->getBody()->write(json_encode($card));
