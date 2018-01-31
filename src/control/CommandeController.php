@@ -10,6 +10,7 @@ namespace lbs\control;
 
 
 use lbs\control\middleware\TokenControl;
+use lbs\model\Card;
 use lbs\model\Commande;
 use lbs\model\Paiement;
 use lbs\model\Sandwich;
@@ -26,9 +27,16 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class CommandeController
 {
     // Récupération du conteneur de dépendance
-  private $container;
+    /**
+     * @var \Slim\Container
+     */
+    private $container;
 
-  public function __construct(\Slim\Container $container){
+    /**
+     * CommandeController constructor.
+     * @param \Slim\Container $container
+     */
+    public function __construct(\Slim\Container $container){
     $this->container = $container;
     $this->result = array();
   }
@@ -39,36 +47,40 @@ class CommandeController
      *
      * */
     // todo: ajouter le controle des champs
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @return Response|static
+     */
     public function createCommande(Request $req, Response $resp) {
         // Récupération des données envoyées
 
         $tab = $req->getParsedBody();
         $commande = new Commande();
-        $cardId = $req->getAttribute('card');
-
-        if(!is_null($cardId)){
-            $commande->card = $cardId->id;
-            // association de la carte et de de la commande,
-            // voir avec le prof si c'est juste
-            $commande->card()->associate($cardId);
-        }
-
-      // id globalement unique - unicité très probable
-      $commande->id = Uuid::uuid1();
-      $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
-      $commande->prenom_client = filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
-      $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
-      $livraison = new \DateTime($tab['date']);
-      $livraison ->format('Y-m-d H:i:s');
-      $commande->livraison = $livraison;
-
+        // id globalement unique - unicité très probable
+        $commande->id = Uuid::uuid1();
+        $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
+        $commande->prenom_client = filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
+        $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
+        $livraison = new \DateTime($tab['date']);
+        $livraison ->format('Y-m-d H:i:s');
+        $commande->livraison = $livraison;
         // Création du token
-      $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
-      $commande->etat = "non traité";
-
-       try{
+        $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
+        $commande->etat = "non traité";
 
         $commande->save();
+
+        $cardId = $req->getAttribute('card');
+        if(!is_null($cardId)){
+            $commande->card()->associate(Card::find($cardId));
+        }
+
+        $commande->save();
+
+
+        try{
+
         $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['id' => $commande->id]));
         $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(201);
         $resp->getBody()->write(json_encode($commande->toArray()));
@@ -82,13 +94,26 @@ class CommandeController
       }
     }
 
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
     public function getCommandes (Request $req, Response $resp, $args) {
       $query = Commande::all();
 
       return Writer::json_output($resp,200,$query);
     }
 
-    public function getState (Request $req, Response $resp,$args) {
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getState (Request $req, Response $resp, $args) {
      try{
 
       if($commande = Commande::select("etat")->where('id',"=",$args['id'])->firstOrFail())
@@ -107,7 +132,15 @@ class CommandeController
         return $notFoundHandler($req,$resp);
       }
     }
-    public function getCommande (Request $req, Response $resp,$args) {
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getCommande (Request $req, Response $resp, $args) {
 
       $token = $req->getQueryParam("token",1);
       $otherToken = $req->getHeader('x-lbs-token');
@@ -148,7 +181,13 @@ class CommandeController
       }
     }
 
-    public function editCommande(Request $req,Response $resp,$args) {
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function editCommande(Request $req, Response $resp, $args) {
       $commande = Commande::where("id","=",$args["id"])->first();
       $tab = $req->getParsedBody();
       $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
@@ -171,7 +210,15 @@ class CommandeController
       $resp->getBody()->write(json_encode($commande->toArray()));
       return $resp;
     }
-    public function getFacture (Request $req,Response $resp,$args) {
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getFacture (Request $req, Response $resp, $args) {
      try{
 
       if($commande = Commande::Select("nom_client","prenom_client","etat")->where('etat','=','paid')->where('id',"=",$args['id'])->firstOrFail())
@@ -209,7 +256,14 @@ class CommandeController
 
     }
 
-    public function payCommande (Request $req,Response $resp,$args) {
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function payCommande (Request $req, Response $resp, $args) {
      try{
 
       if($commande = Commande::where('id',"=",$args['id'])->firstOrFail())

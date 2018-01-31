@@ -69,7 +69,7 @@ class cardController
 
             try{
 
-                $card = Card::select('nom','mail','cumul')->where('id','=',$args['id'])->firstOrFail();
+                $card = Card::select('nom','mail','cumul','reduction')->where('id','=',$args['id'])->firstOrFail();
 
                 $resp = $resp->withHeader('Content-Type','application/json')->withStatus(200);
                 $resp->getBody()->write(json_encode($card));

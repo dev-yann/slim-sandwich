@@ -6,12 +6,13 @@
  * Time: 10:31
  */
 
-namespace lbs\control;
+namespace lbs\control\middleware;
 use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use lbs\model\Card;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use lbs\control\Writer;
 // peut etre utiliser cette methode dans la classe carte , a voir
 
 
@@ -19,13 +20,26 @@ use \Psr\Http\Message\ResponseInterface as Response;
 class AuthController
 {
     // Récupération du conteneur de dépendance
+    /**
+     * @var \Slim\Container
+     */
     private $container;
 
+    /**
+     * AuthController constructor.
+     * @param \Slim\Container $container
+     */
     public function __construct(\Slim\Container $container){
         $this->container = $container;
     }
 
-    public function auth(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function auth(Request $req, Response $resp, $args){
 
         // EN UTILISANT RESTED : ENVOYE
         // AUTHO : BASIC
@@ -43,11 +57,11 @@ class AuthController
         // SINON L'EN-TETE EST PRESENT
         $auth = base64_decode(explode( " ", $req->getHeader('Authorization')[0])[1]);
         //SEPARATION DE L'ID DE LA CARTE ET DU MDP
-        list($name, $pass) = explode(':', $auth);
+        list($mail, $pass) = explode(':', $auth);
 
         // ALORS JE TEST AVEC LA BDD
         try {
-            $card = Card::where('nom','=',$name)->firstOrFail();
+            $card = Card::where('mail','=',$mail)->firstOrFail();
 
             // SI MAUVAIS MDP
             if (!password_verify($pass,$card->password)){
@@ -57,7 +71,6 @@ class AuthController
         } catch (ModelNotFoundException $e){
 
             $resp = $resp->withHeader('WWW-Authenticate', 'Basic realm="api.lbs.local"');
-            $resp = $resp->withStatus(401);
             return Writer::json_output($resp,401,['error' => "Une authentification est nécessaire pour accéder à la ressource"]);
 
         } catch (\Exception $e){

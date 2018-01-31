@@ -12,7 +12,12 @@ use lbs\control\Pagination;
 
 class ItemController {
 
-	public function addItemToCommande (Request $req, Response $resp) {
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @return Response|static
+     */
+    public function addItemToCommande (Request $req, Response $resp) {
 
 		$tab = $req->getParsedBody();
 		$item = new Item();
@@ -34,9 +39,15 @@ class ItemController {
 		}
 
 	}
-	
 
-	public function editItem (Request $req, Response $resp,$args) {
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function editItem (Request $req, Response $resp, $args) {
 		$item = Item::where("id","=",$args['id'])->first();
 		$tab = $req->getParsedBody();
 		$item->sand_id = filter_var($tab["sand_id"],FILTER_SANITIZE_STRING);
@@ -57,7 +68,14 @@ class ItemController {
 		}
 
 	}
-	public function deleteItem (Request $req, Response $resp,$args) {
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function deleteItem (Request $req, Response $resp, $args) {
 		$item = Item::where("id","=",$args['id'])->first();
 			try {
 			$item->delete();

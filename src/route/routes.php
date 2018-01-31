@@ -5,14 +5,7 @@
  * Date: 22/11/17
  * Time: 11:52
  */
-$app->get('/',\lbs\control\Home::class . ':home');
-$app->get('/bonjour/{name}',function($req,$rep,$args){
-    // le middleware est executer ici
 
-    $rep->getbody()->write('bonjour '.$args['name']);
-    // le middleware est executer ici
-
-});
 
 
 
@@ -63,4 +56,5 @@ $app->get('/card/{id}',\lbs\control\cardController::class.':getCard')->add(\lbs\
 
 
 // ROUTES AUTHORIZATION
-$app->get('/auth[/]', \lbs\control\AuthController::class.':auth');
+$app->get('/card[/]', \lbs\control\middleware\AuthController::class.':auth');
+

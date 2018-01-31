@@ -16,9 +16,19 @@ class Categoriescontroller extends Pagination {
 
     // Récupération du conteneur de dépendance
 
+    /**
+     * @var \Slim\Container
+     */
     private $container;
+    /**
+     * @var array
+     */
     private $result;
 
+    /**
+     * Categoriescontroller constructor.
+     * @param \Slim\Container $container
+     */
     public function __construct(\Slim\Container $container){
 
         $this->container = $container;
@@ -27,7 +37,14 @@ class Categoriescontroller extends Pagination {
     }
 
     // GETTERS
-    public function getCategories(Request $req, Response $resp,$args){
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function getCategories(Request $req, Response $resp, $args){
 
         $query = Categorie::select('id','nom','description');
         $categories = Pagination::queryNsize($req,$query);
@@ -53,7 +70,14 @@ class Categoriescontroller extends Pagination {
 
           }
 
-    public function getCategorie(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getCategorie(Request $req, Response $resp, $args){
 
         try{
 
@@ -86,7 +110,14 @@ class Categoriescontroller extends Pagination {
         }
     }
 
-    public function getCategoriesOfSandwich(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function getCategoriesOfSandwich(Request $req, Response $resp, $args){
 
         try{
 
@@ -112,7 +143,14 @@ class Categoriescontroller extends Pagination {
     }
 
     // CRÉATION D'UNE CATEGORIE
-    public function addCategorie(Request $req, Response $resp,$args){
+
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function addCategorie(Request $req, Response $resp, $args){
 
         $tab = $req->getParsedBody();
 
@@ -136,7 +174,14 @@ class Categoriescontroller extends Pagination {
         return Writer::json_output($resp,201,$c->toArray());
     }
 
-    public function changeCategorie(Request $req, Response $resp,$args){
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     * @throws \Interop\Container\Exception\ContainerException
+     */
+    public function changeCategorie(Request $req, Response $resp, $args){
 
         // Récuperation de données envoyées
         $tab = $req->getParsedBody();

@@ -7,7 +7,10 @@
         "slim/slim": "^3.9",
         "firebase/php-jwt": "^5.0.0",
         "twig/twig": "^2.4.4",
-        "slim/twig-view": "^2.3.0"
+        "slim/twig-view": "^2.3.0",
+        "apigen/apigen": "dev-master",
+        "roave/better-reflection": "dev-master#c87d856"
+
     },
     "authors": [
         {

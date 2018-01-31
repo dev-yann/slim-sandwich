@@ -70,6 +70,27 @@ services:
      links :
         - mysql:db
 
+
+##############################################
+# A second php service
+##############################################
+
+  api:
+     image: canals/php
+     container_name: api.lbs.backend
+     environment:
+       - VHOST_HOSTNAME=api.lbs.backend
+       - VHOST_DOCROOT=/var/www/api_backend
+     ports:
+       - "7080:80"
+       - "6843:443"
+     volumes :
+       - ./api_backend:/var/www/api_backend
+       - ./src:/var/www/src
+     links :
+        - mysql:db
+
+
 ##################################
 # postgres + adminer
 ###################################
