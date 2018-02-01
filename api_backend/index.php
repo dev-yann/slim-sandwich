@@ -25,12 +25,8 @@ $db->bootEloquent();
 $app_config = array_merge($settings,$error);
 $app = new \Slim\App( new \Slim\Container($app_config));
 
-
-
-
 // require de toutes mes routes
-require_once __DIR__.'/../src/route/routes_private.php';
-
+require_once __DIR__.'/../src/route/routes_backend.php';
 
 
 $app->run();
