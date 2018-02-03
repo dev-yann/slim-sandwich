@@ -25,3 +25,4 @@ $app->get('/sandwichs[/]',\lbs\control_backend\BackendSandwichController::class 
 $app->get('/sandwichs/{id}[/]',\lbs\control_backend\BackendSandwichController::class . ':getOneSandwich')->setName('sandwich');
 $app->get('/sandwichs/{id}/categories[/]', \lbs\control_backend\BackendSandwichController::class . ':getCategoriesOfSandwich')->setName('categorieOfSandwich');
 //$app->get('/categories/{id}/sandwichs[/]',\lbs\control_backend\BackendSandwichController::class . ':getSandwichOfCategorie')->setName('sandwichOfCategorie');
+$app->delete('/deleteSandwichs/{id}[/]',\lbs\control_backend\BackendSandwichController::class . ':deleteOneSandwich');
