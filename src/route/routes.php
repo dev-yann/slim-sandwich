@@ -35,26 +35,7 @@ $app->get('/commande/{id}[/]',\lbs\control\CommandeController::class .':getComma
 $app->get('/commande/{id}/state[/]',\lbs\control\CommandeController::class .':getState')->setName("stateCommande");
 $app->get('/commandes[/]',\lbs\control\CommandeController::class .':getCommandes')->setName("commandes");
 
-/*
-
-$app->post('/commande[/]',\lbs\control\CommandeController::class .':createCommande')->setName("createCommande")->add(\lbs\control\middleware\TokenControl::class.':checkCardCommand');
-$app->put('/commande/{id}[/]',\lbs\control\CommandeController::class .':editCommande')->setName("editCommande");
-
-
-$app->post('/commande/{id}/pay[/]',\lbs\control\CommandeController::class . ':payCommande');
-$app->get('/commande/{id}/facture[/]',\lbs\control\CommandeController::class . ':getFacture')->setName("getFacture");
-
-//ROUTES ITEMS
-$app->post('/item[/]',\lbs\control\ItemController::class.':addItemToCommande')->setName("addItem");
-$app->put('/item/{id}[/]',\lbs\control\ItemController::class.':editItem')->setName("editItem");
-$app->delete('/item/{id}[/]',\lbs\control\ItemController::class.':deleteItem')->setName("deleteItem");
-
-
-// ROUTES CARD
-$app->post('/card[/]',\lbs\control\cardController::class.':createCard');
-//$app->get('/card[/]', \lbs\control\AuthController::class.':auth');
-
-=======
+//ROUTES COMMANDES
 $app->post('/commande[/]',\lbs\control\CommandeController::class .':createCommande')->setName("createCommande")->add(\lbs\control\middleware\TokenControl::class.':checkCardCommand')->add(\lbs\control\middleware\CheckFormulaire::class.':checkFormulaire')->setArgument('fields',array("nom_client","prenom_client","mail_client","date"));
 $app->put('/commande/{id}',\lbs\control\CommandeController::class .':editCommande')->setName("editCommande");
 $app->post('/commande/{id}/pay',\lbs\control\CommandeController::class . ':payCommande')->add(\lbs\control\middleware\CheckFormulaire::class.':checkFormulaire')->setArgument('fields',array("carte_bancaire","date_expiration"));
@@ -63,7 +44,7 @@ $app->get('/commande/{id}/facture',\lbs\control\CommandeController::class . ':ge
 $app->post('/item[/]',\lbs\control\ItemController::class.':addItemToCommande')->setName("addItem")->add(\lbs\control\middleware\CheckFormulaire::class.':checkFormulaire')->setArgument('fields',array("sand_id","commande_id","taille_id","quantite"));
 $app->put('/item/{id}',\lbs\control\ItemController::class.':editItem')->setName("editItem")->add(\lbs\control\middleware\CheckFormulaire::class.':checkFormulaire')->setArgument('fields',array("sand_id","commande_id","taille_id","quantite"));
 $app->delete('/item/{id}',\lbs\control\ItemController::class.':deleteItem')->setName("deleteItem");
-*/
+
 
 // ROUTES CARD
 $app->post('/card[/]',\lbs\control\cardController::class.':createCard')->add(\lbs\control\middleware\CheckFormulaire::class.':checkFormulaire')->setArgument('fields',array("nom_client","pass_client","mail_client"));
