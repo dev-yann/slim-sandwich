@@ -6,7 +6,6 @@ $settings = require_once  __DIR__ . '/../src/conf/settings.php';
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \lbs\control\Categoriescontroller as Categoriescontroller;
-use lbs\control\Home;
 
 
 

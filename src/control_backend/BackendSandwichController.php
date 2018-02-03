@@ -191,4 +191,20 @@ class BackendSandwichController extends Pagination
 
       }
   }
+
+    public function deleteOneSandwich (Request $req, Response $resp, $args) {
+
+      try{
+          $sandwich = Sandwich::where('id','=',$args['id'])->firstOrFail();
+          $sandwich->delete();
+
+          $resp->withRedirect('/sandwichs[/]', 204);
+
+
+
+      } catch (ModelNotFoundException $e){
+          $notFoundHandler = $this->container->get('notFoundHandler');
+          return $notFoundHandler($req,$resp);
+      }
+    }
 }
