@@ -49,27 +49,19 @@ class Categoriescontroller extends Pagination {
         $query = Categorie::select('id','nom','description');
         $categories = Pagination::queryNsize($req,$query);
 
-        $unecate = [];
-
         foreach ($categories as $category){
 
             $link = array('links' => ['self' => ['href' => $this->container['router']->pathFor('categorie', ['id'=>$category->id])]]);
             array_push($link,$category);
 
             array_push($this->result,$link);
-
-
-            $cate = ['nom' => $category->nom,
-                     'description' => $category->description,
-                     'liencate' => $this->container['router']->pathFor('categorie', ['id'=>$category->id]),
-                     'liensand' => $this->container['router']->pathFor('sandwichOfCategorie', ['id'=>$category->id])];
-
-            array_push($unecate, $cate);
         }
 
-         return $this->container->view->render($resp, 'getcategories.html',['categories'=>$unecate]);
 
-          }
+        $data = Writer::collection($this->result);
+        return Writer::json_output($resp,200,$data);
+
+    }
 
     /**
      * @param Request $req
@@ -87,18 +79,7 @@ class Categoriescontroller extends Pagination {
                 $link = array('links' => ['sandwichs' => ['href' => $this->container['router']->pathFor('sandwichOfCategorie', ['id'=>$categorie->id])]]);
 
                 $data = Writer::ressource($categorie,$link,'categorie');
-
-                $id = $categorie->id;
-                $idpred = $this->container['router']->pathFor('categorie', ['id'=> $id - 1]);
-                $idsuivant = $this->container['router']->pathFor('categorie', ['id'=> $id + 1]);
-
-
-                return $this->container->view->render($resp, 'getone.html',[
-                  'nom' => $categorie->nom,
-                  'description' => $categorie->description,
-                  'precedent'=>$idpred,
-                  'suivant'=>$idsuivant,
-                  'numero' => $categorie->id]);
+                return Writer::json_output($resp,200,$data);
 
             } else {
                 throw new ModelNotFoundException($req, $resp);
@@ -106,8 +87,8 @@ class Categoriescontroller extends Pagination {
 
         } catch (ModelNotFoundException $exception){
 
-          return $this->container->view->render($resp, 'erreur404.html',['message'=>'La catégorie n\'existe pas']);
-
+            $notFoundHandler = $this->container->get('notFoundHandler');
+            return $notFoundHandler($req,$resp);
         }
     }
 
@@ -122,11 +103,8 @@ class Categoriescontroller extends Pagination {
 
         try{
 
-            $reqsandwichs = Sandwich::where('id','=', $args['id'])->firstOrFail();
-            $query =$reqsandwichs ->categories();
+            $query = Sandwich::where('id','=', $args['id'])->firstOrFail()->categories();
             $categories = self::queryNsize($req,$query);
-
-            $cate=[];
 
             foreach ($categories as $category){
 
@@ -134,36 +112,15 @@ class Categoriescontroller extends Pagination {
                 array_push($link,$category);
 
                 array_push($this->result,$link);
-
-                $unecate = ['nom' => $category->nom,
-                            'description' => $category->description,
-                            'lien' => $link['links']['self']['href'] ];
-
-                array_push($cate, $unecate);
             }
 
-            $titre = ' du sandwich ' . $reqsandwichs->nom;
-            $idsand = $reqsandwichs->id;
-            $idsandpred = $this->container['router']->pathFor('categorieOfSandwich', ['id'=> $idsand - 1]);
-            $idsandsuiv = $this->container['router']->pathFor('categorieOfSandwich', ['id'=> $idsand + 1]);
-
-
-            return $this->container->view->render($resp, 'getcategories.html',[
-              'categories'=>$cate,
-              'titre'=>$titre,
-              'numero'=> $idsand,
-              'precedent'=> $idsandpred,
-              'suivant'=> $idsandsuiv,
-            ]);
-
-
-/*            $data = Writer::collection($this->result);
-            return Writer::json_output($resp,200,$data);*/
+            $data = Writer::collection($this->result);
+            return Writer::json_output($resp,200,$data);
 
         } catch (ModelNotFoundException $exception){
 
-          return $this->container->view->render($resp, 'erreur404.html',['message'=>'Ce sandwichs n\'existe pas']);
-
+            $notFoundHandler = $this->container->get('notFoundHandler');
+            return $notFoundHandler($req,$resp);
         }
     }
 
@@ -211,7 +168,7 @@ class Categoriescontroller extends Pagination {
         // Récuperation de données envoyées
         $tab = $req->getParsedBody();
 
-        // Néttoyage de la donné recupérées
+        // Néttoyage de la donné recu
         $id = filter_var($tab['id'],FILTER_SANITIZE_STRING);
         $nom = filter_var($tab['nom'],FILTER_SANITIZE_STRING);
         $description = filter_var($tab['description'],FILTER_SANITIZE_STRING);

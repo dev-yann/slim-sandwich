@@ -52,7 +52,9 @@
 						</div>
 						<div class="card-action">
 							<a href="{{sandwich.liensand}}">EN SAVOIR PLUS</a>
-							<a href="{{sandwich.liensuppr}}">SUPPRIMER CE SANDWICH</a>
+							<form method="delete" action="{{sandwich.liensuppr}}">
+								<button type="submit">SUPPRIMER CE SANDWICH</button>
+							</form>
 						</div>
 					</div>
 				 </div>

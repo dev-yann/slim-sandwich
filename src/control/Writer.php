@@ -34,7 +34,6 @@ class Writer extends Pagination
         return $result;
     }
 
-
     /**
      * @param Response $resp
      * @param $int
@@ -42,7 +41,6 @@ class Writer extends Pagination
      * @return Response|static
      */
     static public function json_output(Response $resp, $int, $data){
-
 
         $resp = $resp->withHeader('Content-Type','application/json')->withStatus($int);
         $resp->getBody()->write(json_encode($data));

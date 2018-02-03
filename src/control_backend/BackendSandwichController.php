@@ -198,7 +198,7 @@ class BackendSandwichController extends Pagination
           $sandwich = Sandwich::where('id','=',$args['id'])->firstOrFail();
           $sandwich->delete();
 
-          $resp->withRedirect('/sandwichs[/]', 204);
+          //$resp->withRedirect('/sandwichs[/]', 204);
 
 
 
