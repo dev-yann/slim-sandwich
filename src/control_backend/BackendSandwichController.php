@@ -119,7 +119,7 @@ class BackendSandwichController extends Pagination
           $unsand = ['nom' => $sandwich->nom,
                      'description' => $sandwich->description,
                      'liensand' => $this->container['router']->pathFor('sandwich', ['id'=>$sandwich->id]),
-                     'liensuprr' => $this->container['router']->pathFor('sandwich', ['id'=>$sandwich->id]) ];
+                     'liensuppr' => $this->container['router']->pathFor('deleteOneSandwich', ['id'=>$sandwich->id]) ];
 
           array_push($sand, $unsand);
       }
@@ -140,7 +140,7 @@ class BackendSandwichController extends Pagination
 
         return $this->container->view->render($resp, 'getsandwichs.html',[
             'sandwichs'=>$sand,
-            'numero' => $pageCourante,
+            'numero' => $numero,
             'precedent'=> $navigation. "?page=".$pagePred,
             'suivant'=> $navigation. "?page=". $pageSuiv]);
   }
@@ -195,10 +195,11 @@ class BackendSandwichController extends Pagination
     public function deleteOneSandwich (Request $req, Response $resp, $args) {
 
       try{
-          $sandwich = Sandwich::where('id','=',$args['id'])->firstOrFail();
-          $sandwich->delete();
 
-          $resp->withRedirect('/sandwichs[/]', 204);
+          $sandwich = Sandwich::where('id','=',$args['id'])->firstOrFail();
+         $sandwich->delete();
+
+        $resp->withRedirect('/sandwichs[/]', 204);
 
 
 
