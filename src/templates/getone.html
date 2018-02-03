@@ -40,32 +40,39 @@
 
 	<section class="row infos">
 		<div class="col s12">
+			<div class="col l4 m6 s12">
+				<h2>Catégories de sandwichs</h2>
+			</div>
 			<p style="text-align:center;">10 janvier 2018</p>
 		</div>
 	</section>
 
 	<section class="row">
-		<div class="col l6 m10 offset-l3 offset-m1">
+		<div class="col l6 m10 s12 offset-l3 offset-m1">
 
-			<div class="col l12">
+			<div class="col l8 m10 s12 offset-l2 offset-m1">
 				<div class="card">
+
 					<div class="card-content">
-						<h2>{{ nom }}</h2>
+						<h3>{{ nom }}</h3>
 						<p>{{ description }}</p>
-
-
-						
 					</div>
+
 					<div class="card-action">
-						<ul>
-							{% for taille in tailles %}
-								<li>{{taille.nom}}</li>
-								<li>{{taille.prix}}</li>
-								<a href="#">AJOUTER AU PANIER</a>
-							{% endfor %}
-						</ul>
+						<ul class="collection">
 
+							{% for taille in tailles %}
+								<li class="collection-item dismissable"><div>
+										<b>{{taille.nom}}</b>
+										 - {{taille.prix}} €
+										 <a href="#!" class="secondary-content"><i class="material-icons">add_shopping_cart</i></a>
+									</div></li>
+							{% endfor %}
+
+						</ul>
 					</div>
+
+
 				</div>
 			</div>
 

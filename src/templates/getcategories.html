@@ -36,13 +36,10 @@
 	<section class="row infos">
 		<div class="col l10 m12 offset-l1">
 			<div class="col l4 m6 s12">
-				<h2>10 catégories</h2>
+				<h2>Catégories {{ titre }}</h2>
 			</div>
 			<div class="col l4 offset-l4">
 				<div class="col l12">
-					<p style="text-align:left;">10 catégories / page</p>
-
-					<p style="text-align:right;">10 janvier 2018</p>
 				</div>
 			</div>
 		</div>
@@ -59,19 +56,14 @@
 						<p>{{ categorie.description }}</p>
 					</div>
 					<div class="card-action">
-					  <a href="{{ categorie.lien }}">EN SAVOIR PLUS</a>
+					  <a href="{{ categorie.liencate }}">EN SAVOIR PLUS</a>
+						<a href="{{ categorie.liensand }}">VOIR TOUS LES SANDWICHS</a>
 					</div>
 				</div>
 			</div>
 			{% endfor %}
 
 		</div>
-	</section>
-
-	 <!-- Quand < ou > n'est pas disponible li.disabled -->
-
-	<section class="row">
-		{% include "navigation.html" %}
 	</section>
 
 		<footer class="page-footer  orange accent-2">

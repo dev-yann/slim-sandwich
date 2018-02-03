@@ -28,7 +28,6 @@ class cardController
 
         $tab = $req->getParsedBody();
         // SI TOUS LES POSTS SONT ENVOYÉS
-        if(isset($tab["nom_client"]) && isset($tab["pass_client"]) && isset($tab["mail_client"])){
 
             $card = new Card();
             $card->id = Uuid::uuid1();
@@ -58,7 +57,7 @@ class cardController
                 return Writer::json_output($resp,403,["error" => $e->getMessage()]);
             }
 
-        }
+        
     }
 
     public function getCard(Request $req, Response $resp,$args){

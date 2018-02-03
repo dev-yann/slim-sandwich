@@ -41,7 +41,7 @@ class Sandwich extends \Illuminate\Database\Eloquent\Model
      * @return $this
      */
     public function sizes(){
-        return $this->belongsToMany(Size::class, 'tarif', 'sand_id', 'taille_id')->withPivot(['prix']);;
+        return $this->belongsToMany(Size::class, 'tarif', 'sand_id', 'taille_id')->withPivot(['prix']);
     }
 
     /**

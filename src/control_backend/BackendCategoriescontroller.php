@@ -1,6 +1,6 @@
 <?php
 
-namespace lbs\control;
+namespace lbs\control_backend;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use lbs\model\Sandwich;
 use \Psr\Http\Message\ServerRequestInterface as Request;
@@ -10,11 +10,12 @@ use Slim\Exception\ContainerException;
 use Slim\Exception\NotFoundException;
 use Slim\Handlers\NotFound;
 use lbs\control\Pagination;
+use lbs\control\Writer;
 
-echo 'lala';
+
 class BackendCategoriescontroller extends Pagination {
 
-    // Récupération du conteneur de dépendance
+  // Récupération du conteneur de dépendance
 
     /**
      * @var \Slim\Container
@@ -61,7 +62,8 @@ class BackendCategoriescontroller extends Pagination {
 
             $cate = ['nom' => $category->nom,
                      'description' => $category->description,
-                     'lien' => $link['links']['self']['href'] ];
+                     'liencate' => $this->container['router']->pathFor('categorie', ['id'=>$category->id]),
+                     'liensand' => $this->container['router']->pathFor('sandwichOfCategorie', ['id'=>$category->id])];
 
             array_push($unecate, $cate);
         }
@@ -88,8 +90,8 @@ class BackendCategoriescontroller extends Pagination {
                 $data = Writer::ressource($categorie,$link,'categorie');
 
                 $id = $categorie->id;
-                $idpred = $id -1;
-                $idsuivant = $id +1;
+                $idpred = $this->container['router']->pathFor('categorie', ['id'=> $id - 1]);
+                $idsuivant = $this->container['router']->pathFor('categorie', ['id'=> $id + 1]);
 
 
                 return $this->container->view->render($resp, 'getone.html',[
@@ -121,8 +123,11 @@ class BackendCategoriescontroller extends Pagination {
 
         try{
 
-            $query = Sandwich::where('id','=', $args['id'])->firstOrFail()->categories();
+            $reqsandwichs = Sandwich::where('id','=', $args['id'])->firstOrFail();
+            $query =$reqsandwichs ->categories();
             $categories = self::queryNsize($req,$query);
+
+            $cate=[];
 
             foreach ($categories as $category){
 
@@ -130,20 +135,37 @@ class BackendCategoriescontroller extends Pagination {
                 array_push($link,$category);
 
                 array_push($this->result,$link);
+
+                $unecate = ['nom' => $category->nom,
+                            'description' => $category->description,
+                            'lien' => $link['links']['self']['href'] ];
+
+                array_push($cate, $unecate);
             }
 
-            $data = Writer::collection($this->result);
-            return Writer::json_output($resp,200,$data);
+            $titre = ' du sandwich ' . $reqsandwichs->nom;
+            $idsand = $reqsandwichs->id;
+            $idsandpred = $this->container['router']->pathFor('categorieOfSandwich', ['id'=> $idsand - 1]);
+            $idsandsuiv = $this->container['router']->pathFor('categorieOfSandwich', ['id'=> $idsand + 1]);
+
+
+            return $this->container->view->render($resp, 'getcategories.html',[
+              'categories'=>$cate,
+              'titre'=>$titre,
+              'numero'=> $idsand,
+              'precedent'=> $idsandpred,
+              'suivant'=> $idsandsuiv,
+            ]);
 
         } catch (ModelNotFoundException $exception){
 
-            $notFoundHandler = $this->container->get('notFoundHandler');
-            return $notFoundHandler($req,$resp);
+          return $this->container->view->render($resp, 'erreur404.html',['message'=>'Ce sandwichs n\'existe pas']);
+
         }
     }
 
-    // CRÉATION D'UNE CATEGORIE
 
+    // CRÉATION D'UNE CATEGORIE
     /**
      * @param Request $req
      * @param Response $resp
