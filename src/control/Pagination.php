@@ -78,7 +78,6 @@ class Pagination
         self::$size = intval($size);
 
         return $query;
-
     }
 
     /**

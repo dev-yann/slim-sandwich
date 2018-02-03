@@ -47,30 +47,24 @@ class BackendCategoriescontroller extends Pagination {
      */
     public function getCategories(Request $req, Response $resp, $args){
 
+
         $query = Categorie::select('id','nom','description');
         $categories = Pagination::queryNsize($req,$query);
-
         $unecate = [];
 
         foreach ($categories as $category){
-
-            $link = array('links' => ['self' => ['href' => $this->container['router']->pathFor('categorie', ['id'=>$category->id])]]);
-            array_push($link,$category);
-
-            array_push($this->result,$link);
-
 
             $cate = ['nom' => $category->nom,
                      'description' => $category->description,
                      'liencate' => $this->container['router']->pathFor('categorie', ['id'=>$category->id]),
                      'liensand' => $this->container['router']->pathFor('sandwichOfCategorie', ['id'=>$category->id])];
 
-            array_push($unecate, $cate);
+              array_push($unecate, $cate);
         }
 
-         return $this->container->view->render($resp, 'getcategories.html',['categories'=>$unecate]);
-
-          }
+      /*page 404 */
+      return $this->container->view->render($resp, 'getcategories.html',['categories'=>$unecate]);
+      }
 
     /**
      * @param Request $req
@@ -85,10 +79,7 @@ class BackendCategoriescontroller extends Pagination {
 
             if($categorie = Categorie::where('id',"=",$args['id'])->firstOrFail())
             {
-                $link = array('links' => ['sandwichs' => ['href' => $this->container['router']->pathFor('sandwichOfCategorie', ['id'=>$categorie->id])]]);
-
-                $data = Writer::ressource($categorie,$link,'categorie');
-
+                /* navigation entre les catégories */
                 $id = $categorie->id;
                 $idpred = $this->container['router']->pathFor('categorie', ['id'=> $id - 1]);
                 $idsuivant = $this->container['router']->pathFor('categorie', ['id'=> $id + 1]);
@@ -106,7 +97,7 @@ class BackendCategoriescontroller extends Pagination {
             }
 
         } catch (ModelNotFoundException $exception){
-
+          /* page 404 */
           return $this->container->view->render($resp, 'erreur404.html',['message'=>'La catégorie n\'existe pas']);
 
         }
@@ -122,23 +113,17 @@ class BackendCategoriescontroller extends Pagination {
     public function getCategoriesOfSandwich(Request $req, Response $resp, $args){
 
         try{
-
+            /* associe les cétogires aux sandwichs */
             $reqsandwichs = Sandwich::where('id','=', $args['id'])->firstOrFail();
             $query =$reqsandwichs ->categories();
             $categories = self::queryNsize($req,$query);
-
             $cate=[];
 
             foreach ($categories as $category){
 
-                $link = array('links' => ['self' => ['href' => $this->container['router']->pathFor('categorie', ['id'=>$category->id])]]);
-                array_push($link,$category);
-
-                array_push($this->result,$link);
-
                 $unecate = ['nom' => $category->nom,
                             'description' => $category->description,
-                            'lien' => $link['links']['self']['href'] ];
+                            'lien' => $this->container['router']->pathFor('categorie', ['id'=>$category->id]) ];
 
                 array_push($cate, $unecate);
             }
@@ -158,9 +143,8 @@ class BackendCategoriescontroller extends Pagination {
             ]);
 
         } catch (ModelNotFoundException $exception){
-
+          /* Page 404 */
           return $this->container->view->render($resp, 'erreur404.html',['message'=>'Ce sandwichs n\'existe pas']);
-
         }
     }
 
@@ -175,7 +159,6 @@ class BackendCategoriescontroller extends Pagination {
     public function addCategorie(Request $req, Response $resp, $args){
 
         $tab = $req->getParsedBody();
-
 
         $c = new Categorie();
         $c->nom = filter_var($tab['nom'],FILTER_SANITIZE_SPECIAL_CHARS);

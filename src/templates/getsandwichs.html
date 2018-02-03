@@ -36,22 +36,13 @@
 	<section class="row infos">
 		<div class="col l10 m12 offset-l1">
 			<div class="col l4 m6 s12">
-				<h2>{{count}} sandwichs  {{ titre}}</h2>
-			</div>
-			<div class="col l4 offset-l4">
-				<div class="col l12">
-					<p style="text-align:left;">10 sandwichs / page</p>
-
-					<p style="text-align:right;">10 janvier 2018</p>
-
-				</div>
+				<h2>Sandwichs  {{ titre}}</h2>
 			</div>
 		</div>
 	</section>
 
 	<section class="row">
 		<div class="col l10 m12 offset-l1">
-
 			{% for sandwich in sandwichs %}
 				<div class="col l4 m6 s12">
 					<div class="card">
@@ -61,11 +52,11 @@
 						</div>
 						<div class="card-action">
 							<a href="{{sandwich.liensand}}">EN SAVOIR PLUS</a>
+							<a href="{{sandwich.liensuppr}}">SUPPRIMER CE SANDWICH</a>
 						</div>
 					</div>
 				 </div>
 				{% endfor %}
-
 			 </div>
 	</section>
 
