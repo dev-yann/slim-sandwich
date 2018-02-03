@@ -6,6 +6,8 @@ services:
     environment:
       - VHOST_HOSTNAME=api.lbs.local
       - VHOST_DOCROOT=/var/www/api
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
     ports:
       - "10080:80"
       - "10443:443"
@@ -41,7 +43,7 @@ services:
 
   adminer:
      image: adminer
-     container_name: adminer.lbs.local
+     container_name: admin.lbs.local
      ports:
        - "8080:8080"
      links:
@@ -59,6 +61,8 @@ services:
      environment:
        - VHOST_HOSTNAME=api.lbs.private.local
        - VHOST_DOCROOT=/var/www/api_private
+       - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+       - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
      ports:
        - "6080:80"
        - "6443:443"
@@ -77,8 +81,10 @@ services:
      image: canals/php
      container_name: api.lbs.backend
      environment:
-       - VHOST_HOSTNAME=api.lbs.backend
+       - VHOST_HOSTNAME=api.lbs.backend.local
        - VHOST_DOCROOT=/var/www/api_backend
+       - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
+       - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
      ports:
        - "7080:80"
        - "6843:443"

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Le sandwich XXL</title>
+	<!--Import Google Icon Font-->
+	{% include "head.html" %}
+
+</head>
+<style>
+	section{
+		color:black;
+	}
+	h2{
+		font-size:20pt;
+		margin-left:25px;
+	}
+	}
+	.infos div div{
+		text-align:center;
+	}
+	.nav-wrapper>a {
+		margin-left:35px;
+	}
+	.page{
+		width:140px;
+		margin:auto;
+	}
+	footer{
+		padding-bottom:20px;
+		margin-top:35px;
+		position:fixed;
+		bottom:0px;
+		width:100%;
+	}
+</style>
+<body>
+	<nav>
+		{% include "navbar.html" %}
+	</nav>
+
+	<section class="row infos">
+		<div class="col s12">
+			<div class="col l4 m6 s12">
+				<h2>Catégories de sandwichs</h2>
+			</div>
+			<p style="text-align:center;">10 janvier 2018</p>
+		</div>
+	</section>
+
+	<section class="row">
+		<div class="col l6 m10 s12 offset-l3 offset-m1">
+
+			<div class="col l8 m10 s12 offset-l2 offset-m1">
+				<div class="card">
+
+					<div class="card-content">
+						<h3>{{ nom }}</h3>
+						<p>{{ description }}</p>
+					</div>
+
+					<div class="card-action">
+						<ul class="collection">
+
+							{% for taille in tailles %}
+								<li class="collection-item dismissable"><div>
+										<b>{{taille.nom}}</b>
+										 - {{taille.prix}} €
+										 <a href="#!" class="secondary-content"><i class="material-icons">add_shopping_cart</i></a>
+									</div></li>
+							{% endfor %}
+
+						</ul>
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
+	</section>
+
+
+	<section class="row">
+		{% include "navigation.html" %}
+	</section>
+
+	<footer class="page-footer  orange accent-2">
+		{% include "footer.html" %}
+  </footer>
+
+	</body>
+</html>

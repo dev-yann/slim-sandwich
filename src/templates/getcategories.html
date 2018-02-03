@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Liste des catégories</title>
+	{% include "head.html" %}
+</head>
+<style>
+	section{
+		color:black;
+	}
+	h2{
+		font-size:20pt;
+		margin-left:25px;
+	}
+	}
+	.infos div div{
+		text-align:center;
+	}
+	.nav-wrapper>a {
+		margin-left:35px;
+	}
+	.page{
+		width:140px;
+		margin:auto;
+	}
+	footer{
+		padding-bottom:20px;
+		margin-top:35px;
+	}
+</style>
+<body>
+	<nav>
+		{% include "navbar.html" %}
+	</nav>
+
+	<section class="row infos">
+		<div class="col l10 m12 offset-l1">
+			<div class="col l4 m6 s12">
+				<h2>Catégories {{ titre }}</h2>
+			</div>
+			<div class="col l4 offset-l4">
+				<div class="col l12">
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="row">
+		<div class="col l10 m12 offset-l1">
+
+			{% for categorie in categories %}
+			<div class="col l4 m6 s12">
+				<div class="card">
+					<div class="card-content">
+						<h3>{{ categorie.nom }}</h3>
+						<p>{{ categorie.description }}</p>
+					</div>
+					<div class="card-action">
+					  <a href="{{ categorie.liencate }}">EN SAVOIR PLUS</a>
+						<a href="{{ categorie.liensand }}">VOIR TOUS LES SANDWICHS</a>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+
+		</div>
+	</section>
+
+		<footer class="page-footer  orange accent-2">
+			{% include "footer.html" %}
+    </footer>
+</body>
+</html>

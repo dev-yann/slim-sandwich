@@ -1,6 +1,6 @@
 <?php
 
-namespace lbs\control;
+namespace lbs\control_backend;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use lbs\model\Sandwich;
 use \Psr\Http\Message\ServerRequestInterface as Request;
@@ -10,11 +10,12 @@ use Slim\Exception\ContainerException;
 use Slim\Exception\NotFoundException;
 use Slim\Handlers\NotFound;
 use lbs\control\Pagination;
+use lbs\control\Writer;
 
 
-class Categoriescontroller extends Pagination {
+class BackendCategoriescontroller extends Pagination {
 
-    // Récupération du conteneur de dépendance
+  // Récupération du conteneur de dépendance
 
     /**
      * @var \Slim\Container
@@ -156,10 +157,6 @@ class Categoriescontroller extends Pagination {
               'suivant'=> $idsandsuiv,
             ]);
 
-
-/*            $data = Writer::collection($this->result);
-            return Writer::json_output($resp,200,$data);*/
-
         } catch (ModelNotFoundException $exception){
 
           return $this->container->view->render($resp, 'erreur404.html',['message'=>'Ce sandwichs n\'existe pas']);
@@ -167,8 +164,8 @@ class Categoriescontroller extends Pagination {
         }
     }
 
-    // CRÉATION D'UNE CATEGORIE
 
+    // CRÉATION D'UNE CATEGORIE
     /**
      * @param Request $req
      * @param Response $resp
