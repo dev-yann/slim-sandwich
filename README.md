@@ -3,7 +3,7 @@ api listant les sandwichs
 
 BDD File => sql/bdd.sql
 
-### 3 serveurs docker :
+### 3 serveurs :
 
 **Requetes api public :**
 >http://api.lbs.local:10080
@@ -11,8 +11,11 @@ BDD File => sql/bdd.sql
 **Requete api privée :**
 >http://api.lbs.private.local:7081
 
-**Backeng de gestion :**
+**Backend de gestion :**
 >http://api.lbs.backend:7080
+
+**Adminer : installer la bdd**
+>http://api.lbs.local:8080/
 
 ### Documentation API
 * api.lbs.local:10080/apidoc
@@ -33,11 +36,11 @@ Clone le depot git
 ```
 
 ```
-Importation de la BDD /sql/lbs.sql
+Importation de la BDD 
 ```
 
 ```
-Configuration du fichier src/conf/lbs.db.conf.ini
+Configuration du fichier src/conf/lbs.db.conf.ini pour adminer
 ```
 
 ```
