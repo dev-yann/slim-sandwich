@@ -46,36 +46,17 @@ class TokenControl
         // SOIT DANS L'URL SOIT DANS L'ENTETE HTTP
       if($token != 1){
 
-        try{
              $resp = $next($req->withAttribute('token', $token),$resp);
             return $resp;
-;
-
-        } catch (ModelNotFoundException $exception){
-
-          $notFoundHandler = $this->container->get('notFoundHandler');
-          return $notFoundHandler($req,$resp);
-
         }
 
-      } elseif (isset($otherToken) && !empty($otherToken)){
-
-        try{
+       elseif (isset($otherToken) && !empty($otherToken)){
 
                 $resp = $next($req->withAttribute('token', $otherToken),$resp);
             return $resp;
-;
-
-
-        } catch (ModelNotFoundException $exception){
-
-          $notFoundHandler = $this->container->get('notFoundHandler');
-          return $notFoundHandler($req,$resp);
-        }
-
       } else {
 
-        return Writer::json_output($resp,401,"Token manquant");
+        return Writer::json_output($resp,401,"Token de la commande manquante vérifiez que le token de la commande est bien envoyée. Soit dans le header x-lbs-token ou  en get[token]");
       }
     }
     
