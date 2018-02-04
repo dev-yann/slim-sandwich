@@ -18,9 +18,7 @@ BDD File => sql/bdd.sql
 >http://api.lbs.local:8080/
 
 ### Documentation API
-* api.lbs.local:10080/apidoc
-* private.lbs.local:10090/apidoc
-* gestion.lbs.local:10081/apidoc
+
 
 
 ### Prérequis
