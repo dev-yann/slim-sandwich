@@ -8,6 +8,7 @@
 
 
 // ROUTES CATEGORIES
+
 $app->get('/categories[/]', \lbs\control\Categoriescontroller::class . ':getCategories')->setName('categories');
 $app->get('/categories/{id}[/]', \lbs\control\Categoriescontroller::class . ':getCategorie')->setName('categorie'); // setName fais le lien avec le pathFor du controller, il permet de seulement modifier les routes et de ne pas se préocuper du controller pour le pathfor
 // Ajout d'une categorie
