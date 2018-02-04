@@ -1,6 +1,7 @@
 <div class="nav-wrapper orange accent-2">
 			<a href="#" class="brand-logo">API Sandwichs</a>
 			<ul id="nav-mobile" class="right hide-on-med-and-down">
+				<li><a href="/bilan"><i class="material-icons center">receipt</i>Bilan</a></li>
 				<li><a href="/sandwichs"><i class="material-icons center">kitchen</i>Les sandwichs</a></li>
 				<li><a href="/categories"><i class="material-icons center">bookmark</i>Les catégories</a></li>
 				<li><!-- Modal Trigger -->
@@ -13,7 +14,7 @@
 <div id="modal1" class="modal bottom-sheet">
 	<div class="modal-content">
 		<div class="row">
-			<form class="col s12">
+			<form class="col s12" method="post" action="/sandwichs">
 				<div class="row">
 					<div class="input-field col s6 m6">
 						<input placeholder="Nom du sandwich" id="Nom" type="text" class="validate" name="nom">
@@ -34,18 +35,30 @@
 						<label for="image">image</label>
 					</div>
 				</div>
-                <div class="row">
-                    <div class="input-field col s12 m12">
-                        <select multiple>
-                            <option value="" disabled selected>Choisir les categories associées aux sandwichs</option>
-                            {% for categorie in categories %}
-                            <option value="{{categorie.id}}">{{categorie.nom}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
+				<div class="input-field col s12">
+					<select multiple name="categorie[]">
+						<option value="" disabled selected>Choisir les categories associées</option>
+						{% for categorie in categories %}
+						<option value="{{categorie.id}}">{{categorie.nom}}</option>
+						{% endfor %}
+					</select>
+				</div>
+				{% for taille in tailles %}
 				<div class="row">
-					<a class="waves-effect waves-light btn">Créer le sandwich</a>
+					<div class="col s6 m6">
+						<input id="{{taille.id}}" type="checkbox" name="tailles[{{taille.id}}]" value="{{taille.id}}">
+						<label for="{{taille.id}}">{{taille.nom}}</label>
+					</div>
+					<div class="input-field col s6 m6">
+						<input id="prix" type="number" class="validate" name="prix[{{taille.id}}]">
+						<label for="prix">Prix associé à la taille si check</label>
+					</div>
+				</div>
+				{% endfor %}
+				<input type="hidden" name="{{namekey}}" value="{{name}}">
+				<input type="hidden" name="{{valuekey}}" value="{{value}}">
+				<div class="row">
+					<button type="submit" class="waves-effect waves-light btn">Créer le sandwich</button>
 				</div>
 			</form>
 		</div>

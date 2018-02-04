@@ -34,14 +34,14 @@ class Sandwich extends \Illuminate\Database\Eloquent\Model
      */
     public function categories(){
 
-        return $this->belongsToMany(Categorie::class,'sand2cat', "sand_id","cat_id");
+        return $this->belongsToMany(Categorie::class,'sand2cat', "sand_id","cat_id")->withPivot(['sand_id','cat_id']);
     }
 
     /**
      * @return $this
      */
     public function sizes(){
-        return $this->belongsToMany(Size::class, 'tarif', 'sand_id', 'taille_id')->withPivot(['prix']);
+        return $this->belongsToMany(Size::class, 'tarif', 'sand_id', 'taille_id')->withPivot(['taille_id','sand_id','prix']);
     }
 
     /**

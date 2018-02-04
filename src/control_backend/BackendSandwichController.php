@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use lbs\model\Categorie;
 use lbs\control\Writer;
 use lbs\model\Size;
+use phpDocumentor\Reflection\Types\Self_;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use lbs\model\Sandwich;
@@ -114,12 +115,15 @@ class BackendSandwichController extends Pagination
         $sandwichs = Pagination::queryNsize($req,$query);
         $sand=[];
 
+
       foreach ($sandwichs as $sandwich){
 
-          $unsand = ['nom' => $sandwich->nom,
-                     'description' => $sandwich->description,
-                     'liensand' => $this->container['router']->pathFor('sandwich', ['id'=>$sandwich->id]),
-                     'liensuppr' => $this->container['router']->pathFor('deleteOneSandwich', ['id'=>$sandwich->id]) ];
+          $unsand = [
+              'nom' => $sandwich->nom,
+              'description' => $sandwich->description,
+              'liensand' => $this->container['router']->pathFor('sandwich', ['id'=>$sandwich->id]),
+              'liensuppr' => $this->container['router']->pathFor('deleteOneSandwich', ['id'=>$sandwich->id])
+              ];
 
           array_push($sand, $unsand);
       }
@@ -139,13 +143,28 @@ class BackendSandwichController extends Pagination
 
          // Besoin des categories pour l'ajout des sandwichs
       $categories = Categorie::select('nom','id')->get();
+      // Besoin des tailles
+      $tailles = Size::select('id','nom')->get();
 
-        return $this->container->view->render($resp, 'getsandwichs.html',[
+      // CSRF token name and value
+      $nameKey = $this->container->csrf->getTokenNameKey();
+      $valueKey = $this->container->csrf->getTokenValueKey();
+
+      $name = $req->getAttribute($nameKey);
+      $value = $req->getAttribute($valueKey);
+
+       return $this->container->view->render($resp, 'getsandwichs.html',[
             'categories' => $categories,
+            'tailles' => $tailles,
             'sandwichs'=>$sand,
             'numero' => $numero,
             'precedent'=> $navigation. "?page=".$pagePred,
-            'suivant'=> $navigation. "?page=". $pageSuiv]);
+            'suivant'=> $navigation. "?page=". $pageSuiv,
+            'name' => $name,
+            'value' => $value,
+            'namekey' => $nameKey,
+            'valuekey' => $valueKey
+            ]);
   }
 
   /**
@@ -207,16 +226,75 @@ class BackendSandwichController extends Pagination
       }
     }
 
+    private static function associatePriceSize ($data,$sandwich,$resp) {
+
+      $tailles = Size::select('id')->get();
+      $tabAttach = [];
+
+        // VERIFICATION
+        if(!empty($data['tailles']) && !empty($data['prix']) && isset($data['tailles']) && isset($data['prix'])){
+            $sandwich->save();
+        } else {
+            return Writer::json_output($resp,403,['Requête' => "Incomplète ou erronée"]);
+        }
+
+        foreach ($tailles as $taille){
+          if(!empty($data['tailles'][$taille->id]) && isset($data['tailles'][$taille->id]) && isset($data['prix'][$taille->id]) && !empty($data['prix'][$taille->id])){
+              $tabAttach[] = ['sand_id' => $sandwich->id, 'taille_id' => $taille->id, 'prix' => $data['prix'][$taille->id]];
+          }
+      }
+      if(!empty($tabAttach)){
+          $sandwich->sizes()->sync($tabAttach);
+
+      } else {
+            // La tableau est vide il y a un soucis
+          return Writer::json_output($resp,403,['Requête' => "Incomplète ou erronée"]);
+      }
+    }
+
     public function createSandwich (Request $req, Response $resp, $args) {
 
       $data = $req->getParsedBody();
-      $sandwich = new Sandwich();
+      if(empty($data['categorie'])) {
 
-      $sandwich->nom = filter_var($data['nom'],FILTER_SANITIZE_SPECIAL_CHARS);
-      $sandwich->description = filter_var($data['description'],FILTER_SANITIZE_SPECIAL_CHARS);
-      $sandwich->type_pain = filter_var($data['type_pain'],FILTER_SANITIZE_SPECIAL_CHARS);
-      $sandwich->img = filter_var($data['img'],FILTER_SANITIZE_SPECIAL_CHARS);
+        $sandwich = new Sandwich();
+        $sandwich->nom = filter_var($data['nom'],FILTER_SANITIZE_SPECIAL_CHARS);
+        $sandwich->description = filter_var($data['description'],FILTER_SANITIZE_SPECIAL_CHARS);
+        $sandwich->type_pain = filter_var($data['type_pain'],FILTER_SANITIZE_SPECIAL_CHARS);
 
-      $sandwich->save();
-    }
+        if(empty($data['img'])){
+            $sandwich->img = null;
+        } else {
+            $sandwich->img = filter_var($data['img'],FILTER_SANITIZE_SPECIAL_CHARS);
+        }
+
+        // Il y a forcement un prix et une taille
+        self::associatePriceSize($data,$sandwich,$resp);
+          $resp->withRedirect('/sandwichs[/]', 204);
+
+    } else {
+
+          $sandwich = new Sandwich();
+          $sandwich->nom = filter_var($data['nom'],FILTER_SANITIZE_SPECIAL_CHARS);
+          $sandwich->description = filter_var($data['description'],FILTER_SANITIZE_SPECIAL_CHARS);
+          $sandwich->type_pain = filter_var($data['type_pain'],FILTER_SANITIZE_SPECIAL_CHARS);
+
+          if(empty($data['img'])){
+              $sandwich->img = null;
+          } else {
+              $sandwich->img = filter_var($data['img'],FILTER_SANITIZE_SPECIAL_CHARS);
+          }
+
+          // Il y a forcement un prix et une taille
+          self::associatePriceSize($data,$sandwich,$resp);
+
+          $tabAttach = [];
+          foreach ($data['categorie'] as $cat_id){
+              // risque que la categorie n'existe pas
+              $tabAttach[] = ['sand_id' => $sandwich->id, 'cat_id' => $cat_id];
+          }
+          $sandwich->categories()->attach($tabAttach);
+          $resp->withRedirect('/sandwichs[/]', 204);
+      }
+  }
 }

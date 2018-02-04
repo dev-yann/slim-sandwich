@@ -19,7 +19,7 @@ class Size extends Model
     protected $hidden = ['pivot'];
 
     public function sandwichs(){
-        return $this->belongsToMany(Sandwich::class, 'tarif', 'taille_id', 'sand_id')->withPivot(['prix']);
+        return $this->belongsToMany(Sandwich::class, 'tarif', 'taille_id', 'sand_id')->withPivot(['taille_id','sand_id','prix']);
     }
 
     public function items(){

@@ -15,6 +15,6 @@ class Categorie extends \Illuminate\Database\Eloquent\Model {
 
     public function sandwichs(){
 
-        return $this->belongsToMany(Sandwich::class,'sand2cat', "cat_id","sand_id");
+        return $this->belongsToMany(Sandwich::class,'sand2cat', "cat_id","sand_id")->withPivot(['sand_id','cat_id']);
     }
 }
