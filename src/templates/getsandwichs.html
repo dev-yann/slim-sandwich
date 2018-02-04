@@ -30,6 +30,10 @@
 		bottom:0px;
 		width:100%;
 	}
+
+	.modal {
+		background-color: darkslategrey;
+	}
 </style>
 <body>
 	<nav>
@@ -55,7 +59,8 @@
 						</div>
 						<div class="card-action">
 							<a href="{{sandwich.liensand}}">EN SAVOIR PLUS</a>
-							<form method="delete" action="{{sandwich.liensuppr}}">
+							<form method="post" action="{{sandwich.liensuppr}}">
+								<input type="hidden" name="_METHOD" value="DELETE"/>
 								<button type="submit">SUPPRIMER CE SANDWICH</button>
 							</form>
 						</div>
@@ -72,8 +77,5 @@
 	<footer class="page-footer  orange accent-2">
 		{% include "footer.html" %}
 	</footer>
-
-	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="js/materialize.min.js"></script>
 </body>
 </html>

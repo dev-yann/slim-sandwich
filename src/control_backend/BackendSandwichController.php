@@ -137,8 +137,11 @@ class BackendSandwichController extends Pagination
          $navigation = $this->container['router']->pathFor('sandwichs');
 
 
+         // Besoin des categories pour l'ajout des sandwichs
+      $categories = Categorie::select('nom','id')->get();
 
         return $this->container->view->render($resp, 'getsandwichs.html',[
+            'categories' => $categories,
             'sandwichs'=>$sand,
             'numero' => $numero,
             'precedent'=> $navigation. "?page=".$pagePred,
@@ -195,19 +198,25 @@ class BackendSandwichController extends Pagination
     public function deleteOneSandwich (Request $req, Response $resp, $args) {
 
       try{
-
           $sandwich = Sandwich::where('id','=',$args['id'])->firstOrFail();
-         $sandwich->delete();
-
-
-        $resp->withRedirect('/sandwichs[/]', 204);
-
-
-
-
+          $sandwich->delete();
+          $resp->withRedirect('/sandwichs[/]', 204);
       } catch (ModelNotFoundException $e){
           $notFoundHandler = $this->container->get('notFoundHandler');
           return $notFoundHandler($req,$resp);
       }
+    }
+
+    public function createSandwich (Request $req, Response $resp, $args) {
+
+      $data = $req->getParsedBody();
+      $sandwich = new Sandwich();
+
+      $sandwich->nom = filter_var($data['nom'],FILTER_SANITIZE_SPECIAL_CHARS);
+      $sandwich->description = filter_var($data['description'],FILTER_SANITIZE_SPECIAL_CHARS);
+      $sandwich->type_pain = filter_var($data['type_pain'],FILTER_SANITIZE_SPECIAL_CHARS);
+      $sandwich->img = filter_var($data['img'],FILTER_SANITIZE_SPECIAL_CHARS);
+
+      $sandwich->save();
     }
 }
