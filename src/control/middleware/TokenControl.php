@@ -12,6 +12,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use lbs\model\Card;
+use lbs\model\Commande;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use lbs\control\Writer;
@@ -45,21 +46,18 @@ class TokenControl
 
         // SOIT DANS L'URL SOIT DANS L'ENTETE HTTP
       if($token != 1){
-
-             $resp = $next($req->withAttribute('token', $token),$resp);
-            return $resp;
-        }
-
-       elseif (isset($otherToken) && !empty($otherToken)){
-
-                $resp = $next($req->withAttribute('token', $otherToken),$resp);
-            return $resp;
-      } else {
-
-        return Writer::json_output($resp,401,"Token de la commande manquante vérifiez que le token de la commande est bien envoyée. Soit dans le header x-lbs-token ou  en get[token]");
+          $resp = $next($req->withAttribute('token', $token),$resp);
+          return $resp;     
       }
+      elseif (isset($otherToken) && !empty($otherToken))
+      {
+          $resp = $next($req->withAttribute('token', $otherToken),$resp);
+          return $resp;
+      }  else {
+        return Writer::json_output($resp,401,"Token manquant");
     }
-    
+}
+
 
 
     /**
