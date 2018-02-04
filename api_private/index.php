@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yann
- * Date: 04/01/18
- * Time: 15:24
- */
-
 require_once  __DIR__ . '/../src/vendor/autoload.php';
 $error = require_once __DIR__ . '/../src/error/error.php';
 $settings = require_once  __DIR__ . '/../src/conf/settings.php';

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Le sandwich XXL</title>
+	<!--Import Google Icon Font-->
+	{% include "head.html" %}
+
+</head>
+<style>
+</style>
+<body>
+	<nav>
+		{% include "navbar.html" %}
+	</nav>
+
+	<section class="row infos">
+		<div class="col s12">
+			<h1 style="text-align:center;">Erreur 404	</h1>
+		</div>
+	</section>
+
+	<section class="row">
+		<div class="col l6 m10 s12 offset-l3 offset-m1">
+
+			<div class="col l6 m10 s12 offset-l3 offset-m1">
+				<div class="card">
+					<div class="card-content">
+						<h2>Page introuvable</h2>
+						<p>{{ message }}</p>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</section>
+
+
+	<footer class="page-footer  orange accent-2">
+		{% include "footer.html" %}
+  </footer>
+
+	</body>
+</html>

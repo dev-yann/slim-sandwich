@@ -5,7 +5,8 @@ $settings = require_once  __DIR__ . '/../src/conf/settings.php';
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use \lbs\control\Categoriescontroller as Categoriescontroller;
+use \lbs\control_backend\Categoriescontroller as Categoriescontroller;
+use lbs\control\Home;
 
 
 
@@ -24,14 +25,8 @@ $db->bootEloquent();
 $app_config = array_merge($settings,$error);
 $app = new \Slim\App( new \Slim\Container($app_config));
 
-
-// Chargements de tous les templates twig
-//$tmpl = $twig->loadTemplate('index.twig');
-
 // require de toutes mes routes
-require_once __DIR__.'/../src/route/routes.php';
-
-
+require_once __DIR__.'/../src/route/routes_backend.php';
 
 
 $app->run();
