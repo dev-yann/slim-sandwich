@@ -37,9 +37,9 @@ class CommandeController
      * @param \Slim\Container $container
      */
     public function __construct(\Slim\Container $container){
-    $this->container = $container;
-    $this->result = array();
-  }
+      $this->container = $container;
+      $this->result = array();
+    }
 
     /*
      * Création d'une commande via une requête POST
@@ -55,31 +55,31 @@ class CommandeController
     public function createCommande(Request $req, Response $resp) {
         // Récupération des données envoyées
 
-        $tab = $req->getParsedBody();
-        $commande = new Commande();
+      $tab = $req->getParsedBody();
+      $commande = new Commande();
         // id globalement unique - unicité très probable
-        $commande->id = Uuid::uuid1();
-        $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
-        $commande->prenom_client = filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
-        $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
-        $livraison = new \DateTime($tab['date']);
-        $livraison ->format('Y-m-d H:i:s');
-        $commande->livraison = $livraison;
+      $commande->id = Uuid::uuid1();
+      $commande->nom_client = filter_var($tab["nom_client"],FILTER_SANITIZE_STRING);
+      $commande->prenom_client = filter_var($tab["prenom_client"],FILTER_SANITIZE_STRING);
+      $commande->mail_client = filter_var($tab["mail_client"],FILTER_SANITIZE_EMAIL);
+      $livraison = new \DateTime($tab['date']);
+      $livraison ->format('Y-m-d H:i:s');
+      $commande->livraison = $livraison;
         // Création du token
-        $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
-        $commande->etat = "non traité";
+      $commande->token = bin2hex(openssl_random_pseudo_bytes(32));
+      $commande->etat = "non traité";
 
-        $commande->save();
+      $commande->save();
 
-        $cardId = $req->getAttribute('card');
-        if(!is_null($cardId)){
-            $commande->card()->associate(Card::find($cardId));
-        }
+      $cardId = $req->getAttribute('card');
+      if(!is_null($cardId)){
+        $commande->card()->associate(Card::find($cardId));
+      }
 
-        $commande->save();
+      $commande->save();
 
 
-        try{
+      try{
 
         $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['id' => $commande->id]));
         $resp = $resp->withHeader('Content-Type', 'application/json')->withStatus(201);
@@ -233,10 +233,10 @@ class CommandeController
           foreach ($items as $item){
 
             $prix = Tarif::select("prix")->where("taille_id","=",$item->taille_id)->where("sand_id","=",$item->sand_id)->first();
- 
+
             $tabItem = array('item' => $item->sandwich->nom,'taille id' => $item->taille_id,'quantite' => $item ->quantite, 'prix unitaire' => $prix->prix,'prix items' => $item->quantite * $prix->prix);
             $somme += $item->quantite * $prix->prix;
-    
+
             array_push($this->result,$tabItem);
           }
           array_push($this->result,array("prix total" => $somme));
@@ -268,7 +268,7 @@ class CommandeController
 
       if($commande = Commande::where('id',"=",$args['id'])->firstOrFail())
         {
-            $tab = $req->getParsedBody();
+          $tab = $req->getParsedBody();
           $paiement = new Paiement();
           $paiement->id = Uuid::uuid1();
 
@@ -278,20 +278,22 @@ class CommandeController
 
           $paiement->date_expiration = $date_expiration->format('m-y');
           $paiement->save();
+          $now = date ('Y-m-d');
           $commande->etat = "paid";
+          $commande->date_paiement = $now;
           $commande->save();
           return Writer::json_output($resp,201,$paiement);
-      } else {
+        } else {
 
-        throw new ModelNotFoundException($req, $resp);
+          throw new ModelNotFoundException($req, $resp);
+        }
+
+      } catch (ModelNotFoundException $exception){
+
+        $notFoundHandler = $this->container->get('notFoundHandler');
+        return $notFoundHandler($req,$resp);
+
       }
 
-    } catch (ModelNotFoundException $exception){
-
-      $notFoundHandler = $this->container->get('notFoundHandler');
-      return $notFoundHandler($req,$resp);
-
     }
-
   }
-}

@@ -25,3 +25,5 @@ $app->get('/sandwichs[/]',\lbs\control_backend\BackendSandwichController::class 
 $app->get('/sandwichs/{id}[/]',\lbs\control_backend\BackendSandwichController::class . ':getOneSandwich')->setName('sandwich');
 $app->get('/sandwichs/{id}/categories[/]', \lbs\control_backend\BackendSandwichController::class . ':getCategoriesOfSandwich')->setName('categorieOfSandwich');
 $app->get('/deleteOneSandwich/{id}[/]',\lbs\control_backend\BackendSandwichController::class . ':deleteOneSandwich')->setName('deleteOneSandwich');
+// ROUTE BILAN
+$app->get('/bilan[/]',\lbs\control_backend\BackendCommandeController::class . ':getBilan')->setName('bilan');

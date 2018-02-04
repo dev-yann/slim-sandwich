@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bilan</title>
+	{% include "head.html" %}
+</head>
+<style>
+</style>
+<body>
+	<nav>
+		{% include "navbar.html" %}
+	</nav>
+
+	<section class="row infos">
+		<div class="col l10 m12 offset-l1">
+			<div class="col l6 m6 s12">
+				<h2>Bilan de la journée : <small> {{now}}</small> </h2>
+			
+			<div class="card">
+				<div class="card-content">
+					<h3>nombres de commandes : {{ count}}</h3>
+					<h3>CA : {{ total}}</h3>
+
+				</div>
+			</div>
+			</div>
+		</div>
+	</section>
+
+	<footer class="page-footer  orange accent-2">
+		{% include "footer.html" %}
+	</footer>
+
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="js/materialize.min.js"></script>
+</body>
+</html>
