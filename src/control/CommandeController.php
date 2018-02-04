@@ -142,11 +142,9 @@ class CommandeController
      */
     public function getCommande (Request $req, Response $resp, $args) {
 
-      $token = $req->getQueryParam("token",1);
-      $otherToken = $req->getHeader('x-lbs-token');
+      $token = $req->getAttribute("token");
 
         // SOIT DANS L'URL SOIT DANS L'ENTETE HTTP
-      if($token != 1){
 
         try{
 
@@ -162,23 +160,6 @@ class CommandeController
 
         }
 
-      } elseif (isset($otherToken) && !empty($otherToken)){
-
-        try{
-
-          $request = Commande::where("id","=", $args['id'])->where("token","=",$otherToken)->firstOrFail();
-          return Writer::json_output($resp,200,$request);
-
-        } catch (ModelNotFoundException $exception){
-
-          $notFoundHandler = $this->container->get('notFoundHandler');
-          return $notFoundHandler($req,$resp);
-        }
-
-      } else {
-
-        return Writer::json_output($resp,401,"Token manquant");
-      }
     }
 
     /**
