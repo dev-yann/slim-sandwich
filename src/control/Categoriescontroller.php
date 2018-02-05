@@ -14,8 +14,6 @@ use lbs\control\Pagination;
 
 class Categoriescontroller extends Pagination {
 
-    // Récupération du conteneur de dépendance
-
     /**
      * @var \Slim\Container
      */
@@ -124,7 +122,6 @@ class Categoriescontroller extends Pagination {
         }
     }
 
-    // CRÉATION D'UNE CATEGORIE
 
     /**
      * @param Request $req

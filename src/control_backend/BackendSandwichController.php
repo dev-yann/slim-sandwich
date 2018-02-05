@@ -157,7 +157,7 @@ class BackendSandwichController extends Pagination
             'categories' => $categories,
             'tailles' => $tailles,
             'sandwichs'=>$sand,
-            'numero' => $numero,
+            'numero' => $pageCourante,
             'precedent'=> $navigation. "?page=".$pagePred,
             'suivant'=> $navigation. "?page=". $pageSuiv,
             'name' => $name,
@@ -218,8 +218,11 @@ class BackendSandwichController extends Pagination
 
       try{
           $sandwich = Sandwich::where('id','=',$args['id'])->firstOrFail();
+          $sandwich->categories()->detach();
+          $sandwich->sizes()->detach();
           $sandwich->delete();
-          $resp->withRedirect('/sandwichs[/]', 204);
+          return $resp->withRedirect('/sandwichs[/]', 204);
+
       } catch (ModelNotFoundException $e){
           $notFoundHandler = $this->container->get('notFoundHandler');
           return $notFoundHandler($req,$resp);
@@ -270,7 +273,7 @@ class BackendSandwichController extends Pagination
 
         // Il y a forcement un prix et une taille
         self::associatePriceSize($data,$sandwich,$resp);
-          $resp->withRedirect('/sandwichs[/]', 204);
+        return $resp->withRedirect('/sandwichs[/]', 204);
 
     } else {
 
@@ -294,7 +297,7 @@ class BackendSandwichController extends Pagination
               $tabAttach[] = ['sand_id' => $sandwich->id, 'cat_id' => $cat_id];
           }
           $sandwich->categories()->attach($tabAttach);
-          $resp->withRedirect('/sandwichs[/]', 204);
+          return $resp->withRedirect('/sandwichs[/]', 204);
       }
   }
 }

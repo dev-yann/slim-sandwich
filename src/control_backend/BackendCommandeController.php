@@ -62,7 +62,7 @@ class BackendCommandeController extends Pagination
 
   			$prix = Tarif::select("prix")->where("taille_id","=",$item->taille_id)->where("sand_id","=",$item->sand_id)->first();
 
-  			$prixcommande += $item->quantite * $prix->prix;
+  			$prixcommande += $item->quantite * $prix['prix'];
   		}
   		$total+=$prixcommande;
   	} 

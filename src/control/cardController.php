@@ -15,16 +15,34 @@ use Ramsey\Uuid\Uuid;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+/**
+ * Class cardController
+ * @package lbs\control
+ */
 class cardController
 {
-    // Récupération du conteneur de dépendance
+
+    /**
+     * @var \Slim\Container
+     */
     private $container;
 
+    /**
+     * cardController constructor.
+     * @param \Slim\Container $container
+     */
     public function __construct(\Slim\Container $container){
         $this->container = $container;
     }
 
-    public function createCard(Request $req, Response $resp,$args){
+    /**
+     * Création d'une carte
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function createCard(Request $req, Response $resp, $args){
 
         $tab = $req->getParsedBody();
         // SI TOUS LES POSTS SONT ENVOYÉS
@@ -61,9 +79,13 @@ class cardController
         }
     }
 
-    public function getCard(Request $req, Response $resp,$args){
-        // LE MIDDLEWARE S'OCCUPE DES VERIFICATION SUR LE TOKEN
-        // JE DOIS QUAND MEME VERIFIER L'ID
+    /**
+     * @param Request $req
+     * @param Response $resp
+     * @param $args
+     * @return Response|static
+     */
+    public function getCard(Request $req, Response $resp, $args){
 
         if(isset($args['id'])){
 

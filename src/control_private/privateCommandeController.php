@@ -18,9 +18,12 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+/**
+ * Class privateCommandeController
+ * @package lbs\control_private
+ */
 class privateCommandeController extends Pagination
 {
-
     /**
      * @var \Slim\Container
      */
@@ -47,10 +50,6 @@ class privateCommandeController extends Pagination
         echo "test";
     }
 
-    // LISTE LES COMMANDES ##
-    /*liste des commandes, filtrées sur l'état , triée par date de livraison et ordre de création –
-     permet au point de vente de planifier la préparation des commandes*/
-
     /**
      * @param Request $req
      * @param Response $resp
@@ -60,17 +59,12 @@ class privateCommandeController extends Pagination
     public function getCommandes(Request $req, Response $resp, $args){
 
         $query = Commande::select("id", "nom_client", "prenom_client", "mail_client", "livraison","token" ,"etat");
-
-        // Filtre sur l'état: on selectionne les commandes avec l'état renseigné
-        // null par défault
         $state = $req->getQueryParam('state',null);
         if(!is_null($state)){
            $query = $query->where("etat",'=',$state);
         }
 
-        // TRIER PAR DATE DE LIVRAISON
         $query = $query->orderBy('livraison');
-
 
         $commandes = Pagination::queryNsize($req,$query);
 
@@ -78,22 +72,10 @@ class privateCommandeController extends Pagination
             array_push($this->result,$commande);
         }
 
-
         $data = Writer::collection($this->result);
         return Writer::json_output($resp,200,$data);
     }
 
-   
-
-
-    /*
-     *
-     * accès au détail complet d'une commande, avec la liste des items,
-     les noms des sandwichs et leur taille sous la forme de ressources imbriqués
-
-
-    // a travailler, la base doit etre nikel pour que ce soit possible
-    */
     /**
      * @param Request $req
      * @param Response $resp
@@ -108,10 +90,8 @@ class privateCommandeController extends Pagination
             if($commande = Commande::where('id',"=",$args['id'])->firstOrFail())
             {
 
-                // si j'obtient la commande
                 array_push($this->result,$commande);
 
-                // je veux la liste des items de la commande
                 $items = Item::where("commande_id","=",$args['id'])->with('sandwich','size')->get();
 
                 foreach ($items as $item){
@@ -135,9 +115,6 @@ class privateCommandeController extends Pagination
         }
     }
 
-
-    // CHANGE "NON TRAITE" EN "TRAITÉ"
-
     /**
      * @param Request $req
      * @param Response $resp
@@ -147,16 +124,13 @@ class privateCommandeController extends Pagination
      */
     public function changeStateCommande(Request $req, Response $resp, $args){
 
-        // Récuperation de données envoyées
         $tab = $req->getParsedBody();
-
-        // CLEAN DATA
+        
         $state = filter_var($tab['state'],FILTER_SANITIZE_STRING);
         $id = filter_var($args['id'],FILTER_SANITIZE_STRING);
 
         try{
 
-            // Récuperation de l'id dans la base
             $commande = Commande::where('id','=',$id)->firstOrFail();
 
             if($state === "traite" || $state === "non traite"){
@@ -166,8 +140,6 @@ class privateCommandeController extends Pagination
 
                 return Writer::json_output($resp, 400,"mauvaise syntaxe d'état");
             }
-
-
 
             $resp = $resp->withHeader('location',$this->container['router']->pathFor('commande',['id' => $commande->id]));
             return Writer::json_output($resp,200,$commande->toArray());

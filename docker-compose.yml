@@ -55,7 +55,7 @@ services:
 # A second php service
 ##############################################
 
-  api:
+  api.private:
      image: canals/php
      container_name: api.lbs.private
      environment:
@@ -64,8 +64,8 @@ services:
        - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
        - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
      ports:
-       - "6080:80"
-       - "6443:443"
+       - "7081:80"
+       - "10442:443"
      volumes :
        - ./api_private:/var/www/api_private
        - ./src:/var/www/src
@@ -74,14 +74,14 @@ services:
 
 
 ##############################################
-# A second php service
+# A third php service
 ##############################################
 
   api:
      image: canals/php
      container_name: api.lbs.backend
      environment:
-       - VHOST_HOSTNAME=api.lbs.backend.local
+       - VHOST_HOSTNAME=api.lbs.backend
        - VHOST_DOCROOT=/var/www/api_backend
        - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/
        - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128/

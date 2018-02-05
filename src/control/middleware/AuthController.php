@@ -13,9 +13,6 @@ use lbs\model\Card;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use lbs\control\Writer;
-// peut etre utiliser cette methode dans la classe carte , a voir
-
-
 
 class AuthController
 {

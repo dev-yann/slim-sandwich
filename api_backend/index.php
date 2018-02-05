@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once  __DIR__ . '/../src/vendor/autoload.php';
 $error = require_once __DIR__ . '/../src/error/error.php';
 $settings = require_once  __DIR__ . '/../src/conf/settings.php';
@@ -24,6 +25,12 @@ $db->bootEloquent();
 // principe du conteneur de dépendance : important
 $app_config = array_merge($settings,$error);
 $app = new \Slim\App( new \Slim\Container($app_config));
+
+// Register with container
+$container = $app->getContainer();
+$container['csrf'] = function ($c) {
+    return new \Slim\Csrf\Guard;
+};
 
 // require de toutes mes routes
 require_once __DIR__.'/../src/route/routes_backend.php';

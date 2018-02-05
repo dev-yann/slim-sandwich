@@ -12,10 +12,11 @@ use Slim\Handlers\NotFound;
 use lbs\control\Pagination;
 use lbs\control\Writer;
 
-
+/**
+ * Class BackendCategoriescontroller
+ * @package lbs\control_backend
+ */
 class BackendCategoriescontroller extends Pagination {
-
-  // Récupération du conteneur de dépendance
 
     /**
      * @var \Slim\Container
@@ -36,8 +37,6 @@ class BackendCategoriescontroller extends Pagination {
         $this->result = array();
 
     }
-
-    // GETTERS
 
     /**
      * @param Request $req
